@@ -1,16 +1,29 @@
-from Pokedex import serch_pokemon_name #impoorta desde Pokedex la funcion serch_pokemon_name
-from Pokedex import serch_pokemon_num #impoorta desde Pokedex la funcion serch_pokemon_num
+from Pokedex import serch_pokemon_name #importa desde Pokedex la función serch_pokemon_name
+from Pokedex import serch_pokemon_num #importa desde Pokedex la función serch_pokemon_num
 from Estadisticas import pokemones #importa desde Estadisticas los diccionarios de Hp, Atk, Def, AtkE, DefE, Vel
 from Tabla_de_tipos import Tipos_pokemons #importa desde Tabla_de_tipos el diccionario de Tipos_pokemons
-from Sistema_combatev2 import Pelea #importa desde Sistema_de_combate la funcion de combate
+from Sistema_combatev2 import Pelea #importa desde Sistema_de_combate la función de combate
 from tkinter import *
 from tkinter import messagebox
 import customtkinter as ctk
+
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("dark-blue")
+
 def Menu():
-    root = Tk()
+    root = ctk.CTk()
+    root.geometry("600x400")
     root.title("Menu")
 
-    #Funciones de consola
+    # Definir colores
+    bg_color = "#3b3b3b"
+    fg_color = "#f2f2f2"
+    primary_color = "#ff3b30"
+    secondary_color = "#1e1e1e"
+
+    root.configure(bg=bg_color)
+
+    # Funciones de consola
     def limpiar_consola():
         root.destroy()
         Menu()
@@ -20,17 +33,20 @@ def Menu():
     def seleccionar_pokemon():
         nonlocal PokemonJ
         Id = ID_entry.get().capitalize()
-        if Id.capitalize() == "Nombre":
+        if Id == "Nombre":
             pokemon = Pokemon_entry.get()
             PokemonJ = serch_pokemon_name(pokemon)
-        elif Id.capitalize() == "Pokedex":
+        elif Id == "Pokedex":
             pokemon_num = int(Pokemon_entry.get())
             PokemonJ = serch_pokemon_num(pokemon_num)
-        messagebox.showinfo("Pokemon", message=f"el pokemon elegido es: {PokemonJ}")
+        messagebox.showinfo("Pokemon", message=f"El pokemon elegido es: {PokemonJ}")
 
     def ver_estadisticas():
         ventana_estadisticas = ctk.CTkToplevel()
+        ventana_estadisticas.geometry("300x300")
         ventana_estadisticas.title("Estadisticas")
+        ventana_estadisticas.configure(bg=bg_color)
+
         if PokemonJ:
             Nivel = 1
             Tipo_P = Tipos_pokemons[PokemonJ]
@@ -41,44 +57,56 @@ def Menu():
             DefE_P = pokemones[PokemonJ]["defE"]
             Vel_P = pokemones[PokemonJ]["vel"]
 
-            estadisticas_label = Label(ventana_estadisticas, text=f"El pokemon que elijio es: {PokemonJ}\nLas esta disticas de su pokemon son:\nNivel {Nivel}\nTipo = {Tipo_P}\nPs = {Hp_P}\nAtk = {Atk_P} \nDef = {Def_P}\nAtkE = {AtkE_P}\nDefE = {DefE_P}\nVel = {Vel_P}")
-            estadisticas_label.pack()
+            estadisticas_label = ctk.CTkLabel(
+                ventana_estadisticas, 
+                text=f"El pokemon que eligió es: {PokemonJ}\nLas estadísticas de su pokemon son:\nNivel: {Nivel}\nTipo: {Tipo_P}\nPS: {Hp_P}\nAtk: {Atk_P} \nDef: {Def_P}\nAtkE: {AtkE_P}\nDefE: {DefE_P}\nVel: {Vel_P}",
+                font=("Helvetica", 14),
+                fg_color=secondary_color,
+                text_color=fg_color
+            )
+            estadisticas_label.pack(padx=20, pady=20)
         else:
-            error_label = Label(ventana_estadisticas, text="Tiene que elejir un pokemon primero")
-            error_label.pack()
+            error_label = ctk.CTkLabel(
+                ventana_estadisticas, 
+                text="Tiene que elegir un pokemon primero",
+                font=("Helvetica", 14),
+                fg_color=secondary_color,
+                text_color=primary_color
+            )
+            error_label.pack(padx=20, pady=20)
 
     def ir_a_combate():
         if PokemonJ:
             Pelea(PokemonJ)
         else:
-            error_label = Label(root, text="Tiene que elegir un pokemon primero")
-            error_label.pack()
+            error_label = ctk.CTkLabel(root, text="Tiene que elegir un pokemon primero", fg_color=secondary_color, text_color=primary_color)
+            error_label.pack(padx=10, pady=10)
+
     def salir():
         root.destroy()
 
-    ID_label = Label(root, text="Como va a elejir el pokemon por nombre o por numero de pokedex?(nombre/pokedex): ")
-    ID_label.pack()
-    ID_entry = Entry(root)
-    ID_entry.pack()
+    ID_label = ctk.CTkLabel(root, text="¿Cómo va a elegir el pokemon, por nombre o por número de pokedex? (nombre/pokedex): ", font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
+    ID_label.pack(padx=10, pady=10)
+    ID_entry = ctk.CTkEntry(root, font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
+    ID_entry.pack(padx=10, pady=10)
 
-    Pokemon_label = Label(root, text="Ingrese el nombre del pokemon o el numero: ")
-    Pokemon_label.pack()
-    Pokemon_entry = Entry(root)
-    Pokemon_entry.pack()
+    Pokemon_label = ctk.CTkLabel(root, text="Ingrese el nombre del pokemon o el número: ", font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
+    Pokemon_label.pack(padx=10, pady=10)
+    Pokemon_entry = ctk.CTkEntry(root, font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
+    Pokemon_entry.pack(padx=10, pady=10)
 
-    seleccionar_pokemon_button = Button(root, text="Seleccionar Pokemon", command=seleccionar_pokemon)
-    seleccionar_pokemon_button.pack()
+    seleccionar_pokemon_button = ctk.CTkButton(root, text="Seleccionar Pokemon", command=seleccionar_pokemon, font=("Helvetica", 14), fg_color=primary_color)
+    seleccionar_pokemon_button.pack(padx=10, pady=10)
 
-    ver_estadisticas_button = Button(root, text="Ver Estadisticas", command=ver_estadisticas)
-    ver_estadisticas_button.pack()
+    ver_estadisticas_button = ctk.CTkButton(root, text="Ver Estadísticas", command=ver_estadisticas, font=("Helvetica", 14), fg_color=primary_color)
+    ver_estadisticas_button.pack(padx=10, pady=10)
 
-    ir_a_combate_button = Button(root, text="Ir a un combate", command=ir_a_combate)
-    ir_a_combate_button.pack()
+    ir_a_combate_button = ctk.CTkButton(root, text="Ir a un combate", command=ir_a_combate, font=("Helvetica", 14), fg_color=primary_color)
+    ir_a_combate_button.pack(padx=10, pady=10)
 
-    salir_button = Button(root, text="Salir", command=salir)
-    salir_button.pack()
+    salir_button = ctk.CTkButton(root, text="Salir", command=salir, font=("Helvetica", 14), fg_color=primary_color)
+    salir_button.pack(padx=10, pady=10)
 
     root.mainloop()
 
-
-
+Menu()
