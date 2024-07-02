@@ -146,5 +146,5 @@ def combate(Pokemon): #funcion para empezar el combate
     cls_pause() #comandos de consola
     pelea(Pokemon, Pokemon_Rival, PsA_Jugador, PsA_Rival) #manda los parametros a la funcion de pelea
 
-l = "Bulbasaur"
-pelea(l)
+# l = "Bulbasaur"
+# pelea(l)

@@ -135,4 +135,3 @@ def Pelea(Pokemon):
     button_ataque4.place(relx=0.45, rely=0.5)
 
     root.mainloop()
-Pelea("Bulbasaur")

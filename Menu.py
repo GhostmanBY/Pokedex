@@ -2,7 +2,7 @@ from Pokedex import serch_pokemon_name #impoorta desde Pokedex la funcion serch_
 from Pokedex import serch_pokemon_num #impoorta desde Pokedex la funcion serch_pokemon_num
 from Estadisticas import pokemones #importa desde Estadisticas los diccionarios de Hp, Atk, Def, AtkE, DefE, Vel
 from Tabla_de_tipos import Tipos_pokemons #importa desde Tabla_de_tipos el diccionario de Tipos_pokemons
-from Sistema_de_combate import pelea #importa desde Sistema_de_combate la funcion de combate
+from Sistema_combatev2 import Pelea #importa desde Sistema_de_combate la funcion de combate
 from tkinter import *
 
 def Menu():
@@ -45,7 +45,7 @@ def Menu():
 
     def ir_a_combate():
         if PokemonJ:
-            pelea(PokemonJ)
+            Pelea(PokemonJ)
         else:
             error_label = Label(root, text="Tiene que elegir un pokemon primero")
             error_label.pack()
