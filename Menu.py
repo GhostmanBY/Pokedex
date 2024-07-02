@@ -1,8 +1,8 @@
-from Pokedex import serch_pokemon_name #importa desde Pokedex la función serch_pokemon_name
-from Pokedex import serch_pokemon_num #importa desde Pokedex la función serch_pokemon_num
-from Estadisticas import pokemones #importa desde Estadisticas los diccionarios de Hp, Atk, Def, AtkE, DefE, Vel
-from Tabla_de_tipos import Tipos_pokemons #importa desde Tabla_de_tipos el diccionario de Tipos_pokemons
-from Sistema_combatev2 import Pelea #importa desde Sistema_de_combate la función de combate
+from Pokedex import serch_pokemon_name # importa desde Pokedex la función serch_pokemon_name
+from Pokedex import serch_pokemon_num # importa desde Pokedex la función serch_pokemon_num
+from Estadisticas import pokemones # importa desde Estadisticas los diccionarios de Hp, Atk, Def, AtkE, DefE, Vel
+from Tabla_de_tipos import Tipos_pokemons # importa desde Tabla_de_tipos el diccionario de Tipos_pokemons
+from Sistema_combatev2 import Pelea # importa desde Sistema_de_combate la función de combate
 from tkinter import *
 from tkinter import messagebox
 import customtkinter as ctk
@@ -32,7 +32,7 @@ def Menu():
 
     def seleccionar_pokemon():
         nonlocal PokemonJ
-        Id = ID_entry.get().capitalize()
+        Id = ID_var.get()
         if Id == "Nombre":
             pokemon = Pokemon_entry.get()
             PokemonJ = serch_pokemon_name(pokemon)
@@ -43,7 +43,7 @@ def Menu():
 
     def ver_estadisticas():
         ventana_estadisticas = ctk.CTkToplevel()
-        ventana_estadisticas.geometry("300x300")
+        ventana_estadisticas.geometry("300x200")
         ventana_estadisticas.title("Estadisticas")
         ventana_estadisticas.configure(bg=bg_color)
 
@@ -58,8 +58,17 @@ def Menu():
             Vel_P = pokemones[PokemonJ]["vel"]
 
             estadisticas_label = ctk.CTkLabel(
-                ventana_estadisticas, 
-                text=f"El pokemon que eligió es: {PokemonJ}\nLas estadísticas de su pokemon son:\nNivel: {Nivel}\nTipo: {Tipo_P}\nPS: {Hp_P}\nAtk: {Atk_P} \nDef: {Def_P}\nAtkE: {AtkE_P}\nDefE: {DefE_P}\nVel: {Vel_P}",
+                ventana_estadisticas,
+                text=f"""El pokemon que eligió es: {PokemonJ}
+Las estadísticas de su pokemon son:
+Nivel: {Nivel}
+Tipo: {Tipo_P}
+PS: {Hp_P}
+Atk: {Atk_P}
+Def: {Def_P}
+AtkE: {AtkE_P}
+DefE: {DefE_P}
+Vel: {Vel_P}""",
                 font=("Helvetica", 14),
                 fg_color=secondary_color,
                 text_color=fg_color
@@ -85,12 +94,19 @@ def Menu():
     def salir():
         root.destroy()
 
-    ID_label = ctk.CTkLabel(root, text="¿Cómo va a elegir el pokemon, por nombre o por número de pokedex? (nombre/pokedex): ", font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
-    ID_label.pack(padx=10, pady=10)
-    ID_entry = ctk.CTkEntry(root, font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
-    ID_entry.pack(padx=10, pady=10)
+    def actualizar_pokemon_label(*args):
+        if ID_var.get() == "Nombre":
+            Pokemon_label.configure(text="Ingrese el nombre del pokemon")
+        else:
+            Pokemon_label.configure(text="Ingrese el número de Pokedex del pokemon")
 
-    Pokemon_label = ctk.CTkLabel(root, text="Ingrese el nombre del pokemon o el número: ", font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
+    ID_var = StringVar(value="Nombre")
+    ID_var.trace("w", actualizar_pokemon_label)
+    ID_menu = ctk.CTkOptionMenu(root, variable=ID_var, values=["Nombre", "Pokedex"])
+    ID_menu.pack(padx=10, pady=10)
+    ID_menu.configure(font=("Helvetica", 14), fg_color=primary_color)
+
+    Pokemon_label = ctk.CTkLabel(root, text="Ingrese el nombre del pokemon", font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
     Pokemon_label.pack(padx=10, pady=10)
     Pokemon_entry = ctk.CTkEntry(root, font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
     Pokemon_entry.pack(padx=10, pady=10)
