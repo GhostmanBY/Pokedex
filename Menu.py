@@ -4,7 +4,8 @@ from Estadisticas import pokemones #importa desde Estadisticas los diccionarios 
 from Tabla_de_tipos import Tipos_pokemons #importa desde Tabla_de_tipos el diccionario de Tipos_pokemons
 from Sistema_combatev2 import Pelea #importa desde Sistema_de_combate la funcion de combate
 from tkinter import *
-
+from tkinter import messagebox
+import customtkinter as ctk
 def Menu():
     root = Tk()
     root.title("Menu")
@@ -25,8 +26,11 @@ def Menu():
         elif Id.capitalize() == "Pokedex":
             pokemon_num = int(Pokemon_entry.get())
             PokemonJ = serch_pokemon_num(pokemon_num)
+        messagebox.showinfo("Pokemon", message=f"el pokemon elegido es: {PokemonJ}")
 
     def ver_estadisticas():
+        ventana_estadisticas = ctk.CTkToplevel()
+        ventana_estadisticas.title("Estadisticas")
         if PokemonJ:
             Nivel = 1
             Tipo_P = Tipos_pokemons[PokemonJ]
@@ -37,10 +41,10 @@ def Menu():
             DefE_P = pokemones[PokemonJ]["defE"]
             Vel_P = pokemones[PokemonJ]["vel"]
 
-            estadisticas_label = Label(root, text=f"El pokemon que elijio es: {PokemonJ}\nLas esta disticas de su pokemon son:\nNivel {Nivel}\nTipo = {Tipo_P}\nPs = {Hp_P}\nAtk = {Atk_P} \nDef = {Def_P}\nAtkE = {AtkE_P}\nDefE = {DefE_P}\nVel = {Vel_P}")
+            estadisticas_label = Label(ventana_estadisticas, text=f"El pokemon que elijio es: {PokemonJ}\nLas esta disticas de su pokemon son:\nNivel {Nivel}\nTipo = {Tipo_P}\nPs = {Hp_P}\nAtk = {Atk_P} \nDef = {Def_P}\nAtkE = {AtkE_P}\nDefE = {DefE_P}\nVel = {Vel_P}")
             estadisticas_label.pack()
         else:
-            error_label = Label(root, text="Tiene que elejir un pokemon primero")
+            error_label = Label(ventana_estadisticas, text="Tiene que elejir un pokemon primero")
             error_label.pack()
 
     def ir_a_combate():

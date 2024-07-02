@@ -148,5 +148,3 @@ def combate(Pokemon): #funcion para empezar el combate
 
 # l = "Bulbasaur"
 # pelea(l)
-
-#hpolaaa
