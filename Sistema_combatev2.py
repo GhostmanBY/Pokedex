@@ -12,44 +12,51 @@ from Movimiento import Potencia_de_movimientos, Precicion_de_movimiento
 from Tabla_de_tipos import Tipos_pokemons, tipos_movimientos  
 from Tabla_de_tipos import Eficacia
 
-def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB,labelJ):
+def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
     global PsA_Rival, PsA_Jugador
+    if PsA_Rival <= 0 or PsA_Jugador <= 0:
+        labelJ.place_forget()
+        labelB.configure(text="El combate ha terminado")
+        labelB.pack(padx=40, pady=10)
+        return
 
     movimientos = [seleccionar_movimiento(Pokemon_J, 0), seleccionar_movimiento(Pokemon_J, 1)]
     movimiento = movimientos[indice]
 
-    movimiento_B =movimiento_bot(Pokemon_R)
+    movimiento_B = movimiento_bot(Pokemon_R)
 
     if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
         precicion = random.randint(0, 100)
-
         if Precicion_de_movimiento[movimiento] >= precicion:
             PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R)
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
 
         precicion = random.randint(0, 100)
-
         if Precicion_de_movimiento[movimiento_B] >= precicion:
             PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
     else:
         precicion = random.randint(0, 100)
-
         if Precicion_de_movimiento[movimiento_B] >= precicion:
             PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
 
         precicion = random.randint(0, 100)
-
         if Precicion_de_movimiento[movimiento] >= precicion:
             PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R)
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
-    labelB.configure(text=PsA_Rival)
-    labelJ.configure(text=PsA_Jugador)
+
+    if labelB.winfo_exists():
+        if PsA_Rival > 0:
+            labelB.configure(text=PsA_Rival)
+    if labelJ.winfo_exists():
+        if PsA_Jugador > 0:
+            labelJ.configure(text=PsA_Jugador)
+
 
 
 def movimiento_bot(pokemon_bot):

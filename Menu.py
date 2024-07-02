@@ -110,6 +110,7 @@ Vel: {Vel_P}""",
     Pokemon_label.pack(padx=10, pady=10)
     Pokemon_entry = ctk.CTkEntry(root, font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
     Pokemon_entry.pack(padx=10, pady=10)
+    Pokemon_entry.bind("<Return>", lambda event: seleccionar_pokemon())  # Agrega este
 
     seleccionar_pokemon_button = ctk.CTkButton(root, text="Seleccionar Pokemon", command=seleccionar_pokemon, font=("Helvetica", 14), fg_color=primary_color)
     seleccionar_pokemon_button.pack(padx=10, pady=10)
