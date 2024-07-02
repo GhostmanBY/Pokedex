@@ -16,7 +16,7 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
     global PsA_Rival, PsA_Jugador
     if PsA_Rival <= 0 or PsA_Jugador <= 0:
         labelJ.place_forget()
-        labelB.configure(text="El combate ha terminado")
+        labelB.configure(text="El combate ha terminado", font=("Arial", 14, "bold"), text_color="red")
         labelB.pack(padx=40, pady=10)
         return
 
@@ -50,14 +50,19 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
 
+    actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J)
+
+def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
+    global PsA_Rival, PsA_Jugador
+    vida_rival = pokemones[Pokemon_R]["hp"]
+    vida_jugador = pokemones[Pokemon_J]["hp"]
+
     if labelB.winfo_exists():
         if PsA_Rival > 0:
-            labelB.configure(text=PsA_Rival)
+            labelB.configure(text=f"{Pokemon_R}\nPS: {max(0, PsA_Rival)}/{vida_rival}", font=("Arial", 12, "bold"))
     if labelJ.winfo_exists():
         if PsA_Jugador > 0:
-            labelJ.configure(text=PsA_Jugador)
-
-
+            labelJ.configure(text=f"{Pokemon_J}\nPS: {max(0, PsA_Jugador)}/{vida_jugador}", font=("Arial", 12, "bold"))
 
 def movimiento_bot(pokemon_bot):
     movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1)]
@@ -101,44 +106,48 @@ def Pelea(Pokemon):
 
     vida_rival = pokemones[Pokemon_Rival]["hp"]
     vida_jugador = pokemones[Pokemon]["hp"]
-    tempjugador = (f"{Pokemon}\nPs{PsA_Jugador}/{vida_jugador}")
-    tempbot = (f"{Pokemon_Rival}\nPs{PsA_Rival}/{vida_rival}")
 
     root = tk.Tk()
-    root.title("Sistema de combate")
-    root.geometry("500x500")
+    root.title("Sistema de combate Pokémon")
+    root.geometry("600x500")
+    root.configure(bg="#f0f0f0")
 
-    frame_batalla = CTkFrame(master=root, height=300, width=550, fg_color="black")
-    frame_batalla.place(relx=-0.01, rely=0)
+    frame_batalla = CTkFrame(master=root, height=300, width=550, fg_color="#e6e6e6", corner_radius=10)
+    frame_batalla.place(relx=0.5, rely=0.3, anchor="center")
     
-    text_name_B = CTkLabel(master=frame_batalla, text=tempbot, text_color="white")
-    text_name_B.place(relx=0.1, rely=0.1, anchor="center")
+    text_name_B = CTkLabel(master=frame_batalla, text=f"{Pokemon_Rival}\nPS: {PsA_Rival}/{vida_rival}", text_color="black", font=("Arial", 14, "bold"))
+    text_name_B.place(relx=0.8, rely=0.2, anchor="center")
 
-    text_name_J = CTkLabel(master=frame_batalla, text=tempjugador, text_color="white")
-    text_name_J.place(relx=0.1, rely=0.4, anchor="center")
+    text_name_J = CTkLabel(master=frame_batalla, text=f"{Pokemon}\nPS: {PsA_Jugador}/{vida_jugador}", text_color="black", font=("Arial", 14, "bold"))
+    text_name_J.place(relx=0.2, rely=0.8, anchor="center")
 
-    frame_historial = CTkFrame(master=root,height=150, width=550, fg_color="black")
-    frame_historial.place(relx=-0.01, rely=0.35)
+    frame_historial = CTkFrame(master=root, height=100, width=550, fg_color="#d9d9d9", corner_radius=10)
+    frame_historial.place(relx=0.5, rely=0.65, anchor="center")
 
-    title_historial = CTkLabel(master=frame_historial, text="Historial:", text_color="white")
+    title_historial = CTkLabel(master=frame_historial, text="Historial:", text_color="black", font=("Arial", 12, "bold"))
     title_historial.place(relx=0.02, rely=0.1)
 
-    text_historial = CTkLabel(master=frame_historial, text=(f"Tu {Pokemon} se va a enfrentar a un {Pokemon_Rival}"), text_color="white")
-    text_historial.place(relx=0.28, rely=0.35, anchor="center")
+    text_historial = CTkLabel(master=frame_historial, text=(f"Tu {Pokemon} se va a enfrentar a un {Pokemon_Rival}"), text_color="black", font=("Arial", 12))
+    text_historial.place(relx=0.5, rely=0.5, anchor="center")
     
-    frame_Botones = CTkFrame(master=root, height=180, width=550, fg_color="green")
-    frame_Botones.place(relx=-0.01, rely=0.65)
+    frame_Botones = CTkFrame(master=root, height=100, width=550, fg_color="#c2c2c2", corner_radius=10)
+    frame_Botones.place(relx=0.5, rely=0.9, anchor="center")
 
-    button_ataque1 = CTkButton(master=frame_Botones, text="Ataque 1", height=90, width=275, text_color="white", corner_radius=0, command= lambda: decicion_ataque(0, Pokemon, Pokemon_Rival,text_name_B, text_name_J))
-    button_ataque1.place(relx=0, rely=0)
-
-    button_ataque2 = CTkButton(master=frame_Botones, text="Ataque 2", height=90, width=275, text_color="white", corner_radius=0, command= lambda: decicion_ataque(1, Pokemon, Pokemon_Rival,text_name_B, text_name_J))
-    button_ataque2.place(relx=0.45, rely=0)
-
-    button_ataque3 = CTkButton(master=frame_Botones, text="Ataque 3", height=90, width=275, text_color="white", corner_radius=0, command= lambda: decicion_ataque(2, Pokemon, Pokemon_Rival,text_name_B, text_name_J))
-    button_ataque3.place(relx=0, rely=0.5)
-
-    button_ataque4 = CTkButton(master=frame_Botones, text="Ataque 4", height=90, width=275, text_color="white", corner_radius=0, command= lambda: decicion_ataque(3, Pokemon, Pokemon_Rival, text_name_B, text_name_J))
-    button_ataque4.place(relx=0.45, rely=0.5)
+    # Creación dinámica de botones de ataque
+    for i in range(2):
+        move = seleccionar_movimiento(Pokemon, i)
+        button = CTkButton(
+            master=frame_Botones,
+            text=move,
+            height=40,
+            width=120,
+            text_color="white",
+            corner_radius=5,
+            command=lambda idx=i: decicion_ataque(idx, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
+        )
+        button.place(relx=0.25 + 0.5*i, rely=0.5, anchor="center")
 
     root.mainloop()
+
+# Llamada a la función principal
+Pelea("Charmander")  # Puedes cambiar "Charmander" por el Pokémon que desees
