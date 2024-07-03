@@ -8,22 +8,23 @@ from tkinter import ttk
 from Pokedex import serch_pokemon_num  
 from Estadisticas import pokemones 
 from Movimiento import seleccionar_movimiento, Tipo_movimiento  
-from Movimiento import movimientos_de_Pokemons
 from Movimiento import Potencia_de_movimientos, Precicion_de_movimiento  
 from Tabla_de_tipos import Tipos_pokemons, tipos_movimientos  
 from Tabla_de_tipos import Eficacia
-
-set_appearance_mode("dark")
 
 def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
     global PsA_Rival, PsA_Jugador
     if PsA_Rival <= 0 or PsA_Jugador <= 0:
         labelJ.place_forget()
-        labelB.configure(text="El combate ha terminado", font=("Arial", 14, "bold"), text_color="red")
-        labelB.pack(padx=40, pady=10)
+        if PsA_Rival <= 0:
+            labelB.configure(text="El jugador a ganado", font=("Arial", 14, "bold"), text_color="green")
+            labelB.pack(padx=40, pady=10)
+        else:
+            labelB.configure(text="El Rival a ganado", font=("Arial", 14, "bold"), text_color="red")
+            labelB.pack(padx=40, pady=10)
         return
 
-    movimientos = movimientos_de_Pokemons[Pokemon_J]
+    movimientos = [seleccionar_movimiento(Pokemon_J, 0), seleccionar_movimiento(Pokemon_J, 1)]
     movimiento = movimientos[indice]
 
     movimiento_B = movimiento_bot(Pokemon_R)
@@ -68,8 +69,8 @@ def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
             labelJ.configure(text=f"{Pokemon_J}\nPS: {max(0, PsA_Jugador)}/{vida_jugador}", font=("Arial", 12, "bold"))
 
 def movimiento_bot(pokemon_bot):
-    movimientos = movimientos_de_Pokemons[pokemon_bot]
-    seleccion = random.choice(movimientos)
+    movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1)]
+    seleccion = random.choice(movimiento)
     return seleccion
 
 def Daño(movimiento, Pokemon_A, Pokemon_D):
@@ -98,8 +99,10 @@ def Daño(movimiento, Pokemon_A, Pokemon_D):
     return int(Damage)
 
 def Pelea(Pokemon):
-    global PsA_Rival, PsA_Jugador
-    # pokemon del rival
+    global PsA_Rival, PsA_Jugador, tempjugador, tempbot
+    global Pokemon_Rival
+    global vida_jugador, vida_rival
+    #pokemon del rival
     num = [1, 4, 7]
     R = random.choice(num)
     Pokemon_Rival = serch_pokemon_num(R)
@@ -136,22 +139,21 @@ def Pelea(Pokemon):
     frame_Botones = CTkFrame(master=root, height=100, width=550, fg_color="#c2c2c2", corner_radius=10)
     frame_Botones.place(relx=0.5, rely=0.9, anchor="center")
 
-    movimientos = movimientos_de_Pokemons[Pokemon]
-
-    # Iteramos sobre cada movimiento y creamos un botón
-    for idx, movimiento in enumerate(movimientos):
-        boton = CTkButton(
+    # Creación dinámica de botones de ataque
+    for i in range(2):
+        move = seleccionar_movimiento(Pokemon, i)
+        button = CTkButton(
             master=frame_Botones,
-            text=movimiento,
+            text=move,
             height=40,
             width=120,
             text_color="white",
             corner_radius=5,
-            command=lambda idx=idx: decicion_ataque(idx, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
+            command=lambda idx=i: decicion_ataque(idx, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
         )
-        boton.place(relx=0.25 + 0.5 * idx, rely=0.5, anchor="center")
+        button.place(relx=0.25 + 0.5*i, rely=0.5, anchor="center")
 
     root.mainloop()
 
 # Llamada a la función principal
-Pelea("Squirtle")  # Puedes cambiar "Bulbasaur" por el Pokémon que desees
+#Pelea("Charmander")  # Puedes cambiar "Charmander" por el Pokémon que desees
