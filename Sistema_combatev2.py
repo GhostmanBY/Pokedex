@@ -9,7 +9,7 @@ from tkinter import ttk
 #Importacion de funciones de otros archivos
 from Pokedex import serch_pokemon_num  
 from Estadisticas import pokemones 
-from Movimiento import seleccionar_movimiento, Tipo_movimiento  
+from Movimiento import seleccionar_movimiento, Tipo_movimiento, tipo_de_movimientos  
 from Movimiento import Potencia_de_movimientos, Precicion_de_movimiento  
 from Tabla_de_tipos import Tipos_pokemons, tipos_movimientos  
 from Tabla_de_tipos import Eficacia
@@ -63,17 +63,6 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
     #llama a la funcion para actualizar los texto donde refleja la vida de los pokemons
     actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J)
 
-def precicion_calculo(movimiento, pokemon_A, pokemon_D):
-    P_movimiento = Precicion_de_movimiento[movimiento]
-
-    P_pokemon_A = pokemones[pokemon_A]["precicion"]
-
-    E_pokemon_D = pokemones[pokemon_D]["evacion"]
-
-    porcentaje_final = P_movimiento * (P_pokemon_A/E_pokemon_D)
-
-    return float(porcentaje_final)
-
 def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
     global PsA_Rival, PsA_Jugador
     vida_rival = pokemones[Pokemon_R]["hp"]
@@ -87,11 +76,26 @@ def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
         if PsA_Jugador > 0:
             labelJ.configure(text=f"{Pokemon_J}\nPS: {max(0, PsA_Jugador)}/{vida_jugador}", font=("Arial", 12, "bold"))
 
+def precicion_calculo(movimiento, pokemon_A, pokemon_D):
+    P_movimiento = Precicion_de_movimiento[movimiento]
+
+    P_pokemon_A = pokemones[pokemon_A]["precicion"]
+
+    E_pokemon_D = pokemones[pokemon_D]["evacion"]
+
+    porcentaje_final = P_movimiento * (P_pokemon_A/E_pokemon_D)
+
+    return float(porcentaje_final)
+
 #Elije de forma alatoria el movimiento del bot 
 def movimiento_bot(pokemon_bot):
     movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1), seleccionar_movimiento(pokemon_bot, 2), seleccionar_movimiento(pokemon_bot, 3)]
     seleccion = random.choice(movimiento)
     return seleccion
+
+def evacion_precicion(movimiento, Pokemon_A, Pokemon_D):
+    if tipo_de_movimientos[movimiento] == "Alt_Precicion":
+        
 
 #Calcula el daño con la formula de los juegos originales
 def Daño(movimiento, Pokemon_A, Pokemon_D):
