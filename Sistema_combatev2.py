@@ -19,7 +19,7 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
     global PsA_Rival, PsA_Jugador
     if PsA_Rival <= 0 or PsA_Jugador <= 0:
         labelJ.place_forget()
-        if PsA_Rival <= 0: #one un mensaje o otro si gana el jugador o el bot
+        if PsA_Rival <= 0:#un mensaje o otro si gana el jugador o el bot
             labelB.configure(text="El jugador a ganado", font=("Arial", 14, "bold"), text_color="green")
             labelB.pack(padx=40, pady=10)
         else:
