@@ -29,10 +29,11 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
 
     movimientos = [seleccionar_movimiento(Pokemon_J, 0), seleccionar_movimiento(Pokemon_J, 1), seleccionar_movimiento(Pokemon_J, 2), seleccionar_movimiento(Pokemon_J, 3)]
     movimiento = movimientos[indice]
+    evacion_precicion(movimiento, Pokemon_J, Pokemon_R)
     porcentaje_de_acierto_J = precicion_calculo(movimiento, Pokemon_J, Pokemon_R)
 
     movimiento_B = movimiento_bot(Pokemon_R)
-    porcentaje_de_acierto_B = precicion_calculo(movimiento, Pokemon_R, Pokemon_J)
+    porcentaje_de_acierto_B = precicion_calculo(movimiento_B, Pokemon_R, Pokemon_J)
 
     if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
         precicion = random.uniform(0, 100) #numero random 
@@ -93,10 +94,18 @@ def movimiento_bot(pokemon_bot):
     seleccion = random.choice(movimiento)
     return seleccion
 
-def evacion_precicion(movimiento, Pokemon_A, Pokemon_D):
+def evacion_precicion(movimiento,Pokemon_A, Pokemon_D):
     if tipo_de_movimientos[movimiento] == "Alt_Precicion":
+        if movimiento in tipo_de_movimientos[movimiento]["P-1"]: 
+            v_A = pokemones[Pokemon_D]["precicion"]
         
-
+            v_A -= 1    
+    else:
+        if movimiento in tipo_de_movimientos[movimiento]["E-1"]:
+            v_A = pokemones[Pokemon_A]["evacion"]
+            
+            v_A += 1
+            
 #Calcula el daño con la formula de los juegos originales
 def Daño(movimiento, Pokemon_A, Pokemon_D):
     N = 1
