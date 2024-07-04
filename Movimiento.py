@@ -3,7 +3,7 @@ tipo_de_movimientos = {
     "Especial": ["Ascuas", "Pistola agua", "Rayo", "Psíquico"],
     "Fisico": ["Latigo cepa", "Placaje", "Llamarada", "Puño Fuego", "Golpe Karate", "Cuchillada", "Hoja Afilada"],
     "Alt_Precicion": ["Ataque arena"],
-    "Alt_Evacion": ["Doble equipo", "Onda Trueno", "Hipnosis"],
+    "Alt_Evacion": ["Doble equipo"],
 } 
 
 def Tipo_movimiento(movimiento): # función para saber el tipo de ataque que se ingresó
