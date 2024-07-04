@@ -4,7 +4,7 @@ Tipos_pokemons = {
 
 tipos_movimientos = {
     "Ascuas": "Fuego", "Latigo cepa": "Planta", "Pistola agua": "Agua",
-    "Placaje": "Normal",
+    "Placaje": "Normal", "Llamarada": "Fuego",
 } #diccionario de los tipos de cada ataque
 
 Tipos_x2 = {

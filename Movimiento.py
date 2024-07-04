@@ -30,7 +30,7 @@ Precicion_de_movimiento = {
 
 # Movimientos de cada Pokémon
 movimientos_de_Pokemons = {
-    "Bulbasaur": ["Latigo cepa", "Placaje"], "Charmander": ["Ascuas", "Placaje"], "Squirtle": ["Pistola agua", "Placaje"]
+    "Bulbasaur": ["Latigo cepa", "Placaje", "Ataque arena", "Doble equipo" ], "Charmander": ["Llamarada", "Placaje", "Doble equipo", "Ataque arena"], "Squirtle": ["Pistola agua", "Placaje", "Ataque arena","Doble equipo"]
 } #Movimientos de cada pokemon
 
 def seleccionar_movimiento(pokemon, i): #funcion para identificar los movimiento de cada pokemon
