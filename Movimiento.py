@@ -30,22 +30,11 @@ Precicion_de_movimiento = {
 
 # Movimientos de cada Pokémon
 movimientos_de_Pokemons = {
-    "Bulbasaur": ["Latigo cepa", "Placaje", "Hoja Afilada"],
-    "Charmander": ["Ascuas", "Placaje", "Llamarada", "Puño Fuego"],
-    "Squirtle": ["Pistola agua", "Placaje", "Surf"],
-    "Pikachu": ["Rayo", "Onda Trueno", "Placaje"],
-    "Machop": ["Golpe Karate", "Placaje", "Puño Fuego"],
-    "Abra": ["Psíquico", "Hipnosis", "Doble equipo"],
-    "Sandshrew": ["Ataque arena", "Placaje", "Cuchillada"],
-    "Gengar": ["Hipnosis", "Psíquico", "Doble equipo"],
-    "Eevee": ["Placaje", "Ataque arena", "Doble equipo"]
-}
+    "Bulbasaur": ["Latigo cepa", "Placaje"], "Charmander": ["Ascuas", "Placaje"], "Squirtle": ["Pistola agua", "Placaje"]
+} #Movimientos de cada pokemon
 
-def seleccionar_movimiento(pokemon, i): # función para identificar los movimientos de cada Pokémon
-    movimientos = list(movimientos_de_Pokemons.get(pokemon, [])) # le asigna a movimientos la lista completa de los movimientos del Pokémon recibido
-    if movimientos: # verifica si el Pokémon tiene movimientos
-        if 0 <= i < len(movimientos): # verifica si el índice está dentro del rango de movimientos disponibles
-            return movimientos[i] # en caso verdadero, retorna el movimiento en la posición indicada por i
-        else:
-            return None # si el índice está fuera de rango, retorna None
-    return None # en caso de que no tenga ningún movimiento, retorna None
+def seleccionar_movimiento(pokemon, i): #funcion para identificar los movimiento de cada pokemon
+    movimientos = list(movimientos_de_Pokemons.get(pokemon, [i])) #le asigana a movimiento la lista completa de los movimientos del pokemon resivido
+    if movimientos: #verifica si el pokemon tiene movimientos
+        return movimientos[i] #en caso verdadero retorna el movimiento en la posicion indicada por i
+    return None #en caso de que no tenga ningun movimiento retorna None
