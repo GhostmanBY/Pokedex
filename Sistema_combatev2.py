@@ -27,39 +27,52 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
             labelB.pack(padx=40, pady=10)
         return
 
-    movimientos = [seleccionar_movimiento(Pokemon_J, 0), seleccionar_movimiento(Pokemon_J, 1)]
+    movimientos = [seleccionar_movimiento(Pokemon_J, 0), seleccionar_movimiento(Pokemon_J, 1), seleccionar_movimiento(Pokemon_J, 2), seleccionar_movimiento(Pokemon_J, 3)]
     movimiento = movimientos[indice]
+    porcentaje_de_acierto_J = precicion_calculo(movimiento, Pokemon_J, Pokemon_R)
 
     movimiento_B = movimiento_bot(Pokemon_R)
+    porcentaje_de_acierto_B = precicion_calculo(movimiento, Pokemon_R, Pokemon_J)
 
     if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
-        precicion = random.randint(0, 100) #numero random 
+        precicion = random.uniform(0, 100) #numero random 
         #si el numero ramdom esta dentro del rango de la presicion del movimiento acierta si no falla
-        if Precicion_de_movimiento[movimiento] >= precicion: 
+        if porcentaje_de_acierto_J >= precicion: 
             PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R) #para el jugador si acierta
         else:
             messagebox.showinfo("Precisión", "El movimiento falló") #para el jugador si falla
 
-        precicion = random.randint(0, 100)
-        if Precicion_de_movimiento[movimiento_B] >= precicion:
+        precicion = random.uniform(0, 100)
+        if porcentaje_de_acierto_B >= precicion:
             PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
     else:
-        precicion = random.randint(0, 100)
-        if Precicion_de_movimiento[movimiento_B] >= precicion:
+        precicion = random.uniform(0, 100)
+        if porcentaje_de_acierto_B >= precicion:
             PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
 
-        precicion = random.randint(0, 100)
-        if Precicion_de_movimiento[movimiento] >= precicion:
+        precicion = random.uniform(0, 100)
+        if porcentaje_de_acierto_J >= precicion:
             PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R)
         else:
             messagebox.showinfo("Precisión", "El movimiento falló")
 
     #llama a la funcion para actualizar los texto donde refleja la vida de los pokemons
     actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J)
+
+def precicion_calculo(movimiento, pokemon_A, pokemon_D):
+    P_movimiento = Precicion_de_movimiento[movimiento]
+
+    P_pokemon_A = pokemones[pokemon_A]["precicion"]
+
+    E_pokemon_D = pokemones[pokemon_D]["evacion"]
+
+    porcentaje_final = P_movimiento * (P_pokemon_A/E_pokemon_D)
+
+    return float(porcentaje_final)
 
 def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
     global PsA_Rival, PsA_Jugador
@@ -76,7 +89,7 @@ def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
 
 #Elije de forma alatoria el movimiento del bot 
 def movimiento_bot(pokemon_bot):
-    movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1)]
+    movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1), seleccionar_movimiento(pokemon_bot, 2), seleccionar_movimiento(pokemon_bot, 3)]
     seleccion = random.choice(movimiento)
     return seleccion
 
@@ -155,7 +168,8 @@ def Pelea(Pokemon):
     frame_Botones.place(relx=0.5, rely=0.9, anchor="center")
 
     # Creación dinámica de botones de ataque
-    for i in range(2):
+    j = -1 #fijate como queres acomodar esta inicializacion por que queda raro aca
+    for i in range(4):
         move = seleccionar_movimiento(Pokemon, i)
         button = CTkButton(
             master=frame_Botones,
@@ -166,9 +180,13 @@ def Pelea(Pokemon):
             corner_radius=5,
             command=lambda idx=i: decicion_ataque(idx, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
         )
-        button.place(relx=0.25 + 0.5*i, rely=0.5, anchor="center")
+        if i < 2:
+            button.place(relx=0.25 + 0.5*i, rely=0.25, anchor="center")
+        elif i > 1:
+            j += 1
+            button.place(relx=0.25 + 0.5*j, rely=0.75, anchor="center")
 
     root.mainloop()
 
 # Llamada a la función principal
-#Pelea("Charmander")  # Puedes cambiar "Charmander" por el Pokémon que desees
+Pelea("Charmander")  # Puedes cambiar "Charmander" por el Pokémon que desees
