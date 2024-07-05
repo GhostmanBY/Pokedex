@@ -154,6 +154,7 @@ def Menu():
     seleccionar_pokemon_button = ctk.CTkButton(select_frame, text="Buscar", command=seleccionar_pokemon, 
                                                fg_color=POKE_BLUE, hover_color=POKE_YELLOW, text_color=POKE_WHITE)
     seleccionar_pokemon_button.pack(side="left", padx=5)
+    seleccionar_pokemon_button.bind("<Return>", lambda event: seleccionar_pokemon())
 
     # Frame para la imagen del Pokémon
     image_frame = ctk.CTkFrame(main_frame, fg_color=POKE_WHITE)
