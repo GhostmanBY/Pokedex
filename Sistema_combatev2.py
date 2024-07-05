@@ -141,7 +141,7 @@ def Pelea(Pokemon):
 
     root = CTk()
     root.title("Sistema de combate Pokémon")
-    root.geometry("800x600")
+    root.geometry("800x700")
     set_appearance_mode("dark")
 
     # Main frame
