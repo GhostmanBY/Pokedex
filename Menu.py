@@ -75,8 +75,9 @@ def Menu():
 
     def ir_a_combate():
         if PokemonJ:
-            root.withdraw()
+            root.destroy()
             Pelea(PokemonJ)
+            root.mainloop()
 
     def actualizar_pokemon_label(*args):
         if ID_var.get() == "Nombre":
