@@ -118,8 +118,7 @@ def Menu():
                         fg_color=POKE_RED, hover_color=POKE_BLUE, text_color=POKE_WHITE).pack(pady=(20, 0))
 
     def ir_a_combate():
-        if PokemonJ:
-            Pelea(PokemonJ)
+        Pelea(PokemonJ)
 
     def actualizar_pokemon_label(*args):
         if ID_var.get() == "Nombre":

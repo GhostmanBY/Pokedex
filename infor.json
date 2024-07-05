@@ -1,0 +1,1 @@
+{"pokemones": {"Bulbasaur": {"xp": 64, "nivel": 1, "hp": 200000, "atk": 49, "def": 49, "atkE": 65, "defE": 65, "precicion": 45, "evacion": 45}, "Ivysaur": {"hp": 60, "atk": 62, "def": 63, "atkE": 80, "defE": 80, "precicion": 60, "evacion": 60}, "Venusaur": {"hp": 80, "atk": 82, "def": 83, "atkE": 100, "defE": 100, "precicion": 80, "evacion": 80}}}
