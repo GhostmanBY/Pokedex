@@ -2,19 +2,24 @@
 tipo_de_movimientos = {
     "Especial": ["Ascuas", "Pistola agua", "Rayo", "Psíquico"],
     "Fisico": ["Latigo cepa", "Placaje", "Llamarada", "Puño Fuego", "Golpe Karate", "Cuchillada", "Hoja Afilada"],
-    "Alt_Precicion": {
-        "P-1": ["Ataque arena"], 
-    },
-    "Alt_Evacion": {
-        "E+1": ["Doble equipo"],    
-    },
-} 
+    "Alt_Precicion": ["Ataque arena"],
+    "Alt_Evacion": ["Doble equipo"]
+}
 
 def Tipo_movimiento(movimiento): # función para saber el tipo de ataque que se ingresó
     for tipo, movimientos in tipo_de_movimientos.items(): # va buscando en cada item del diccionario de tipos de movimiento
         if movimiento.capitalize() in movimientos: # verifica si el movimiento ingresado está en el tipo que está en el for 
             return tipo # si es verdadero, retorna el tipo que es el movimiento
     return None # en caso de que no exista, devuelve None
+
+variacion = {
+    "Alt_Precicion": {
+        "Ataque arena": 1,
+    },
+    "Alt_Evacion": {
+        "Doble equipo": 1,
+    },
+}
 
 # Diccionario de potencia de cada movimiento
 Potencia_de_movimientos = {

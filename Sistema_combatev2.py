@@ -10,7 +10,7 @@ from tkinter import ttk
 from Pokedex import serch_pokemon_num  
 from Estadisticas import pokemones 
 from Movimiento import seleccionar_movimiento, Tipo_movimiento, tipo_de_movimientos  
-from Movimiento import Potencia_de_movimientos, Precicion_de_movimiento  
+from Movimiento import Potencia_de_movimientos, Precicion_de_movimiento, variacion  
 from Tabla_de_tipos import Tipos_pokemons, tipos_movimientos  
 from Tabla_de_tipos import Eficacia
 
@@ -29,40 +29,42 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
 
     movimientos = [seleccionar_movimiento(Pokemon_J, 0), seleccionar_movimiento(Pokemon_J, 1), seleccionar_movimiento(Pokemon_J, 2), seleccionar_movimiento(Pokemon_J, 3)]
     movimiento = movimientos[indice]
-    evacion_precicion(movimiento, Pokemon_J, Pokemon_R)
-    porcentaje_de_acierto_J = precicion_calculo(movimiento, Pokemon_J, Pokemon_R)
-
-    movimiento_B = movimiento_bot(Pokemon_R)
-    porcentaje_de_acierto_B = precicion_calculo(movimiento_B, Pokemon_R, Pokemon_J)
-
-    if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
-        precicion = random.uniform(0, 100) #numero random 
-        #si el numero ramdom esta dentro del rango de la presicion del movimiento acierta si no falla
-        if porcentaje_de_acierto_J >= precicion: 
-            PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R) #para el jugador si acierta
-        else:
-            messagebox.showinfo("Precisión", "El movimiento falló") #para el jugador si falla
-
-        precicion = random.uniform(0, 100)
-        if porcentaje_de_acierto_B >= precicion:
-            PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
-        else:
-            messagebox.showinfo("Precisión", "El movimiento falló")
+    if Tipo_movimiento(movimiento) != "Especial" and Tipo_movimiento(movimiento) != "Fisico":
+        evacion_precicion(movimiento, Pokemon_J, Pokemon_R)
     else:
-        precicion = random.uniform(0, 100)
-        if porcentaje_de_acierto_B >= precicion:
-            PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
-        else:
-            messagebox.showinfo("Precisión", "El movimiento falló")
+        porcentaje_de_acierto_J = precicion_calculo(movimiento, Pokemon_J, Pokemon_R)
 
-        precicion = random.uniform(0, 100)
-        if porcentaje_de_acierto_J >= precicion:
-            PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R)
-        else:
-            messagebox.showinfo("Precisión", "El movimiento falló")
+        movimiento_B = movimiento_bot(Pokemon_R)
+        porcentaje_de_acierto_B = precicion_calculo(movimiento_B, Pokemon_R, Pokemon_J)
 
-    #llama a la funcion para actualizar los texto donde refleja la vida de los pokemons
-    actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J)
+        if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
+            precicion = random.uniform(0, 100) #numero random 
+            #si el numero ramdom esta dentro del rango de la presicion del movimiento acierta si no falla
+            if porcentaje_de_acierto_J >= precicion: 
+                PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R) #para el jugador si acierta
+            else:
+                messagebox.showinfo("Precisión", "El movimiento falló") #para el jugador si falla
+
+            precicion = random.uniform(0, 100)
+            if porcentaje_de_acierto_B >= precicion:
+                PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
+            else:
+                messagebox.showinfo("Precisión", "El movimiento falló")
+        else:
+            precicion = random.uniform(0, 100)
+            if porcentaje_de_acierto_B >= precicion:
+                PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
+            else:
+                messagebox.showinfo("Precisión", "El movimiento falló")
+
+            precicion = random.uniform(0, 100)
+            if porcentaje_de_acierto_J >= precicion:
+                PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R)
+            else:
+                messagebox.showinfo("Precisión", "El movimiento falló")
+
+        #llama a la funcion para actualizar los texto donde refleja la vida de los pokemons
+        actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J)
 
 def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
     global PsA_Rival, PsA_Jugador
@@ -95,16 +97,16 @@ def movimiento_bot(pokemon_bot):
     return seleccion
 
 def evacion_precicion(movimiento,Pokemon_A, Pokemon_D):
-    if tipo_de_movimientos[movimiento] == "Alt_Precicion":
-        if movimiento in tipo_de_movimientos[movimiento]["P-1"]: 
+    if Tipo_movimiento(movimiento) == "Alt_Precicion":
+        if movimiento in variacion[Tipo_movimiento(movimiento)]: 
             v_A = pokemones[Pokemon_D]["precicion"]
-        
-            v_A -= 1    
+    
+            v_A -= variacion[Tipo_movimiento(movimiento)][movimiento]    
     else:
-        if movimiento in tipo_de_movimientos[movimiento]["E-1"]:
+        if movimiento in variacion[Tipo_movimiento(movimiento)]:
             v_A = pokemones[Pokemon_A]["evacion"]
             
-            v_A += 1
+            v_A += variacion[Tipo_movimiento(movimiento)][movimiento]
             
 #Calcula el daño con la formula de los juegos originales
 def Daño(movimiento, Pokemon_A, Pokemon_D):
