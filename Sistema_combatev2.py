@@ -9,62 +9,50 @@ from tkinter import ttk
 #Importacion de funciones de otros archivos
 from Pokedex import serch_pokemon_num  
 from Estadisticas import pokemones 
-from Movimiento import seleccionar_movimiento, Tipo_movimiento, tipo_de_movimientos  
+from Movimiento import seleccionar_movimiento, Tipo_movimiento, tipo_de_movimientos, movimientos_de_Pokemons
 from Movimiento import Potencia_de_movimientos, Precicion_de_movimiento, variacion  
 from Tabla_de_tipos import Tipos_pokemons, tipos_movimientos  
 from Tabla_de_tipos import Eficacia
 
 #Funcion para definir cual ataque se ara
 def decicion_ataque(indice, Pokemon_J, Pokemon_R, labelB, labelJ):
+    print(indice)
     global PsA_Rival, PsA_Jugador
+    
     if PsA_Rival <= 0 or PsA_Jugador <= 0:
         labelJ.place_forget()
-        if PsA_Rival <= 0:#un mensaje o otro si gana el jugador o el bot
+        if PsA_Rival <= 0:
             labelB.configure(text="El jugador a ganado", font=("Arial", 14, "bold"), text_color="green")
-            labelB.pack(padx=40, pady=10)
-        else:
+        elif PsA_Jugador <= 0:
             labelB.configure(text="El Rival a ganado", font=("Arial", 14, "bold"), text_color="red")
-            labelB.pack(padx=40, pady=10)
+        labelB.pack(padx=40, pady=10)
         return
 
-    movimientos = [seleccionar_movimiento(Pokemon_J, 0), seleccionar_movimiento(Pokemon_J, 1), seleccionar_movimiento(Pokemon_J, 2), seleccionar_movimiento(Pokemon_J, 3)]
-    movimiento = movimientos[indice]
-    if Tipo_movimiento(movimiento) != "Especial" and Tipo_movimiento(movimiento) != "Fisico":
-        evacion_precicion(movimiento, Pokemon_J, Pokemon_R)
-    else:
-        porcentaje_de_acierto_J = precicion_calculo(movimiento, Pokemon_J, Pokemon_R)
+    movimientos = [seleccionar_movimiento(Pokemon_J, i) for i in range(4)]
+    ataque = movimientos[indice]
 
+    if Tipo_movimiento(ataque) not in ["Especial", "Fisico"]:
+        evacion_precicion(ataque, Pokemon_J, Pokemon_R)
+    else:
+        porcentaje_de_acierto_J = precicion_calculo(ataque, Pokemon_J, Pokemon_R)
         movimiento_B = movimiento_bot(Pokemon_R)
         porcentaje_de_acierto_B = precicion_calculo(movimiento_B, Pokemon_R, Pokemon_J)
 
         if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
-            precicion = random.uniform(0, 100) #numero random 
-            #si el numero ramdom esta dentro del rango de la presicion del movimiento acierta si no falla
-            if porcentaje_de_acierto_J >= precicion: 
-                PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R) #para el jugador si acierta
-            else:
-                messagebox.showinfo("Precisión", "El movimiento falló") #para el jugador si falla
-
-            precicion = random.uniform(0, 100)
-            if porcentaje_de_acierto_B >= precicion:
-                PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
-            else:
-                messagebox.showinfo("Precisión", "El movimiento falló")
+            orden = [(Pokemon_J, ataque, porcentaje_de_acierto_J), (Pokemon_R, movimiento_B, porcentaje_de_acierto_B)]
         else:
+            orden = [(Pokemon_R, movimiento_B, porcentaje_de_acierto_B), (Pokemon_J, ataque, porcentaje_de_acierto_J)]
+
+        for atacante, movimiento, precision in orden:
             precicion = random.uniform(0, 100)
-            if porcentaje_de_acierto_B >= precicion:
-                PsA_Jugador -= Daño(movimiento_B, Pokemon_R, Pokemon_J)
+            if precision >= precicion:
+                if atacante == Pokemon_J:
+                    PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R)
+                else:
+                    PsA_Jugador -= Daño(movimiento, Pokemon_R, Pokemon_J)
             else:
                 messagebox.showinfo("Precisión", "El movimiento falló")
-
-            precicion = random.uniform(0, 100)
-            if porcentaje_de_acierto_J >= precicion:
-                PsA_Rival -= Daño(movimiento, Pokemon_J, Pokemon_R)
-            else:
-                messagebox.showinfo("Precisión", "El movimiento falló")
-
-        #llama a la funcion para actualizar los texto donde refleja la vida de los pokemons
-        actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J)
+    actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J)
 
 def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
     global PsA_Rival, PsA_Jugador
@@ -79,8 +67,8 @@ def actualizar_ps(labelB, labelJ, Pokemon_R, Pokemon_J):
         if PsA_Jugador > 0:
             labelJ.configure(text=f"{Pokemon_J}\nPS: {max(0, PsA_Jugador)}/{vida_jugador}", font=("Arial", 12, "bold"))
 
-def precicion_calculo(movimiento, pokemon_A, pokemon_D):
-    P_movimiento = Precicion_de_movimiento[movimiento]
+def precicion_calculo(ataque, pokemon_A, pokemon_D):
+    P_movimiento = Precicion_de_movimiento[ataque]
 
     P_pokemon_A = pokemones[pokemon_A]["precicion"]
 
@@ -92,7 +80,7 @@ def precicion_calculo(movimiento, pokemon_A, pokemon_D):
 
 #Elije de forma alatoria el movimiento del bot 
 def movimiento_bot(pokemon_bot):
-    movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1), seleccionar_movimiento(pokemon_bot, 2), seleccionar_movimiento(pokemon_bot, 3)]
+    movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1)]
     seleccion = random.choice(movimiento)
     return seleccion
 
@@ -104,10 +92,10 @@ def evacion_precicion(movimiento,Pokemon_A, Pokemon_D):
             v_A -= variacion[Tipo_movimiento(movimiento)][movimiento]    
     else:
         if movimiento in variacion[Tipo_movimiento(movimiento)]:
-            v_A = pokemones[Pokemon_A]["evacion"]
+            v_E = pokemones[Pokemon_A]["evacion"]
             
-            v_A += variacion[Tipo_movimiento(movimiento)][movimiento]
-            
+            v_E += variacion[Tipo_movimiento(movimiento)][movimiento]
+    print(f"v_A: {v_A}")
 #Calcula el daño con la formula de los juegos originales
 def Daño(movimiento, Pokemon_A, Pokemon_D):
     N = 1
@@ -183,24 +171,50 @@ def Pelea(Pokemon):
     frame_Botones.place(relx=0.5, rely=0.9, anchor="center")
 
     # Creación dinámica de botones de ataque
-    j = -1 #fijate como queres acomodar esta inicializacion por que queda raro aca
-    for i in range(4):
-        move = seleccionar_movimiento(Pokemon, i)
-        button = CTkButton(
-            master=frame_Botones,
-            text=move,
-            height=40,
-            width=120,
-            text_color="white",
-            corner_radius=5,
-            command=lambda idx=i: decicion_ataque(idx, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
-        )
-        if i < 2:
-            button.place(relx=0.25 + 0.5*i, rely=0.25, anchor="center")
-        elif i > 1:
-            j += 1
-            button.place(relx=0.25 + 0.5*j, rely=0.75, anchor="center")
+    button_1 = CTkButton(
+        master=frame_Botones,
+        text=seleccionar_movimiento(Pokemon, 0),
+        height=40,
+        width=120,
+        text_color="white",
+        corner_radius=5,
+        command=lambda: decicion_ataque(0, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
+    )
+    button_1.place(relx=0.25, rely=0.25, anchor="center")
 
+    button_2 = CTkButton(
+        master=frame_Botones,
+        text=seleccionar_movimiento(Pokemon, 1),
+        height=40,
+        width=120,
+        text_color="white",
+        corner_radius=5,
+        command=lambda: decicion_ataque(1, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
+    )
+    button_2.place(relx=0.75, rely=0.25, anchor="center")
+
+    button_3 = CTkButton(
+        master=frame_Botones,
+        text=seleccionar_movimiento(Pokemon, 2),
+        height=40,
+        width=120,
+        text_color="white",
+        corner_radius=5,
+        command=lambda: decicion_ataque(2, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
+    )
+    button_3.place(relx=0.25, rely=0.75, anchor="center")
+
+    button_4 = CTkButton(
+        master=frame_Botones,
+        text=seleccionar_movimiento(Pokemon, 3),
+        height=40,
+        width=120,
+        text_color="white",
+        corner_radius=5,
+        command=lambda: decicion_ataque(3, Pokemon, Pokemon_Rival, text_name_B, text_name_J)
+    )
+    button_4.place(relx=0.75, rely=0.75, anchor="center")
+    
     root.mainloop()
 
 # Llamada a la función principal
