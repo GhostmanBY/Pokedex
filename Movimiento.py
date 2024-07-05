@@ -43,7 +43,11 @@ movimientos_de_Pokemons = {
 } #Movimientos de cada pokemon
 
 def seleccionar_movimiento(pokemon, i): #funcion para identificar los movimiento de cada pokemon
-    movimientos = list(movimientos_de_Pokemons.get(pokemon, [i])) #le asigana a movimiento la lista completa de los movimientos del pokemon resivido
-    if movimientos: #verifica si el pokemon tiene movimientos
-        return movimientos[i] #en caso verdadero retorna el movimiento en la posicion indicada por i
-    return None #en caso de que no tenga ningun movimiento retorna None
+    try:
+        movimientos = list(movimientos_de_Pokemons.get(pokemon, [i])) #le asigana a movimiento la lista completa de los movimientos del pokemon resivido
+        if movimientos: #verifica si el pokemon tiene movimientos
+            return movimientos[i] #en caso verdadero retorna el movimiento en la posicion indicada por i
+        print(movimientos[i])
+        return None #en caso de que no tenga ningun movimiento retorna None
+    except:
+        return None

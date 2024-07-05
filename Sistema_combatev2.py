@@ -204,4 +204,7 @@ def Pelea(Pokemon):
     root.mainloop()
 
 # Llamada a la función principal
-Pelea("Charmander")  # Puedes cambiar "Charmander" por el Pokémon que desees
+#Pelea("Charmander")  # Puedes cambiar "Charmander" por el Pokémon que desees
+
+
+

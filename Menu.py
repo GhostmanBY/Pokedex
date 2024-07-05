@@ -1,129 +1,136 @@
-from Pokedex import serch_pokemon_name # importa desde Pokedex la función serch_pokemon_name
-from Pokedex import serch_pokemon_num # importa desde Pokedex la función serch_pokemon_num
-from Estadisticas import pokemones # importa desde Estadisticas los diccionarios de Hp, Atk, Def, AtkE, DefE, Vel
-from Tabla_de_tipos import Tipos_pokemons # importa desde Tabla_de_tipos el diccionario de Tipos_pokemons
-from Sistema_combatev2 import Pelea # importa desde Sistema_de_combate la función de combate
-from tkinter import *
-from tkinter import messagebox
 import customtkinter as ctk
+from tkinter import messagebox, StringVar
+from PIL import Image, ImageTk
+import requests
+from io import BytesIO
+from Pokedex import serch_pokemon_name, serch_pokemon_num
+from Estadisticas import pokemones
+from Tabla_de_tipos import Tipos_pokemons
+from Sistema_combatev2 import Pelea
 
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("dark-blue")
+def obtener_imagen_pokemon(nombre, tamaño=(200, 200)):
+    url = f"https://pokeapi.co/api/v2/pokemon/{nombre.lower()}/"
+    respuesta = requests.get(url)
+    datos = respuesta.json()
+    imagen_url = datos['sprites']['front_default']
+    
+    respuesta = requests.get(imagen_url)
+    img = Image.open(BytesIO(respuesta.content))
+    img = img.resize(tamaño)
+    
+    return ImageTk.PhotoImage(img)
 
 def Menu():
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("dark-blue")
+
     root = ctk.CTk()
-    root.geometry("600x400")
-    root.title("Menu")
-
-    # Definir colores
-    bg_color = "#3b3b3b"
-    fg_color = "#f2f2f2"
-    primary_color = "#ff3b30"
-    secondary_color = "#1e1e1e"
-
-    root.configure(bg=bg_color)
-
-    # Funciones de consola
-    def limpiar_consola():
-        root.destroy()
-        Menu()
+    root.geometry("800x600")
+    root.title("Pokédex")
 
     PokemonJ = None
 
     def seleccionar_pokemon():
         nonlocal PokemonJ
         Id = ID_var.get()
-        if Id == "Nombre":
-            pokemon = Pokemon_entry.get()
-            PokemonJ = serch_pokemon_name(pokemon)
-        elif Id == "Pokedex":
-            pokemon_num = int(Pokemon_entry.get())
-            PokemonJ = serch_pokemon_num(pokemon_num)
-        messagebox.showinfo("Pokemon", message=f"El pokemon elegido es: {PokemonJ}")
+        pokemon = Pokemon_entry.get()
+        
+        try:
+            if Id == "Nombre":
+                PokemonJ = serch_pokemon_name(pokemon)
+            elif Id == "Pokedex":
+                PokemonJ = serch_pokemon_num(int(pokemon))
+            
+            if PokemonJ:
+                messagebox.showinfo("Pokémon", message=f"El Pokémon elegido es: {PokemonJ}")
+                foto_poke = obtener_imagen_pokemon(PokemonJ, tamaño=(300, 300))
+                foto.configure(image=foto_poke)
+                foto.image = foto_poke
+                ver_estadisticas_button.configure(state="normal")
+                ir_a_combate_button.configure(state="normal")
+            else:
+                messagebox.showerror("Error", "Pokémon no encontrado")
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese un número válido para la Pokédex")
 
     def ver_estadisticas():
-        ventana_estadisticas = ctk.CTkToplevel()
-        ventana_estadisticas.geometry("300x200")
-        ventana_estadisticas.title("Estadisticas")
-        ventana_estadisticas.configure(bg=bg_color)
-
         if PokemonJ:
+            ventana_estadisticas = ctk.CTkToplevel(root)
+            ventana_estadisticas.geometry("400x300")
+            ventana_estadisticas.title(f"Estadísticas de {PokemonJ}")
+
             Nivel = 1
             Tipo_P = Tipos_pokemons[PokemonJ]
-            Hp_P = pokemones[PokemonJ]["hp"]
-            Atk_P = pokemones[PokemonJ]["atk"]
-            Def_P = pokemones[PokemonJ]["def"]
-            AtkE_P = pokemones[PokemonJ]["atkE"]
-            DefE_P = pokemones[PokemonJ]["defE"]
-            Vel_P = pokemones[PokemonJ]["vel"]
+            stats = pokemones[PokemonJ]
 
-            estadisticas_label = ctk.CTkLabel(
-                ventana_estadisticas,
-                text=f"""El pokemon que eligió es: {PokemonJ}
-Las estadísticas de su pokemon son:
-Nivel: {Nivel}
-Tipo: {Tipo_P}
-PS: {Hp_P}
-Atk: {Atk_P}
-Def: {Def_P}
-AtkE: {AtkE_P}
-DefE: {DefE_P}
-Vel: {Vel_P}""",
-                font=("Helvetica", 14),
-                fg_color=secondary_color,
-                text_color=fg_color
-            )
-            estadisticas_label.pack(padx=20, pady=20)
-        else:
-            error_label = ctk.CTkLabel(
-                ventana_estadisticas, 
-                text="Tiene que elegir un pokemon primero",
-                font=("Helvetica", 14),
-                fg_color=secondary_color,
-                text_color=primary_color
-            )
-            error_label.pack(padx=20, pady=20)
+            frame = ctk.CTkFrame(ventana_estadisticas)
+            frame.pack(padx=20, pady=20, fill="both", expand=True)
+
+            ctk.CTkLabel(frame, text=f"Estadísticas de {PokemonJ}", font=("Helvetica", 18, "bold")).pack(pady=10)
+            ctk.CTkLabel(frame, text=f"Nivel: {Nivel}").pack()
+            ctk.CTkLabel(frame, text=f"Tipo: {Tipo_P}").pack()
+            
+            for stat, value in stats.items():
+                ctk.CTkLabel(frame, text=f"{stat.upper()}: {value}").pack()
 
     def ir_a_combate():
         if PokemonJ:
+            root.withdraw()
             Pelea(PokemonJ)
-        else:
-            error_label = ctk.CTkLabel(root, text="Tiene que elegir un pokemon primero", fg_color=secondary_color, text_color=primary_color)
-            error_label.pack(padx=10, pady=10)
-
-    def salir():
-        root.destroy()
 
     def actualizar_pokemon_label(*args):
         if ID_var.get() == "Nombre":
-            Pokemon_label.configure(text="Ingrese el nombre del pokemon")
+            Pokemon_label.configure(text="Ingrese el nombre del Pokémon")
         else:
-            Pokemon_label.configure(text="Ingrese el número de Pokedex del pokemon")
+            Pokemon_label.configure(text="Ingrese el número de Pokédex")
+
+    # Marco principal
+    main_frame = ctk.CTkFrame(root)
+    main_frame.pack(padx=20, pady=20, fill="both", expand=True)
+
+    # Título
+    ctk.CTkLabel(main_frame, text="Pokédex", font=("Helvetica", 24, "bold")).pack(pady=10)
+
+    # Frame para la selección del Pokémon
+    select_frame = ctk.CTkFrame(main_frame)
+    select_frame.pack(pady=10, padx=10, fill="x")
 
     ID_var = StringVar(value="Nombre")
     ID_var.trace("w", actualizar_pokemon_label)
-    ID_menu = ctk.CTkOptionMenu(root, variable=ID_var, values=["Nombre", "Pokedex"])
-    ID_menu.pack(padx=10, pady=10)
-    ID_menu.configure(font=("Helvetica", 14), fg_color=primary_color)
+    ID_menu = ctk.CTkOptionMenu(select_frame, variable=ID_var, values=["Nombre", "Pokedex"])
+    ID_menu.pack(side="left", padx=5)
 
-    Pokemon_label = ctk.CTkLabel(root, text="Ingrese el nombre del pokemon", font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
-    Pokemon_label.pack(padx=10, pady=10)
-    Pokemon_entry = ctk.CTkEntry(root, font=("Helvetica", 14), fg_color=secondary_color, text_color=fg_color)
-    Pokemon_entry.pack(padx=10, pady=10)
-    Pokemon_entry.bind("<Return>", lambda event: seleccionar_pokemon())  # Agrega este
+    Pokemon_label = ctk.CTkLabel(select_frame, text="Ingrese el nombre del Pokémon")
+    Pokemon_label.pack(side="left", padx=5)
 
-    seleccionar_pokemon_button = ctk.CTkButton(root, text="Seleccionar Pokemon", command=seleccionar_pokemon, font=("Helvetica", 14), fg_color=primary_color)
-    seleccionar_pokemon_button.pack(padx=10, pady=10)
+    Pokemon_entry = ctk.CTkEntry(select_frame)
+    Pokemon_entry.pack(side="left", padx=5, expand=True, fill="x")
+    Pokemon_entry.bind("<Return>", lambda event: seleccionar_pokemon())
 
-    ver_estadisticas_button = ctk.CTkButton(root, text="Ver Estadísticas", command=ver_estadisticas, font=("Helvetica", 14), fg_color=primary_color)
-    ver_estadisticas_button.pack(padx=10, pady=10)
+    seleccionar_pokemon_button = ctk.CTkButton(select_frame, text="Buscar", command=seleccionar_pokemon)
+    seleccionar_pokemon_button.pack(side="left", padx=5)
 
-    ir_a_combate_button = ctk.CTkButton(root, text="Ir a un combate", command=ir_a_combate, font=("Helvetica", 14), fg_color=primary_color)
-    ir_a_combate_button.pack(padx=10, pady=10)
+    # Frame para la imagen del Pokémon
+    image_frame = ctk.CTkFrame(main_frame)
+    image_frame.pack(pady=10)
 
-    salir_button = ctk.CTkButton(root, text="Salir", command=salir, font=("Helvetica", 14), fg_color=primary_color)
-    salir_button.pack(padx=10, pady=10)
+    foto = ctk.CTkLabel(image_frame, text="", width=300, height=300)
+    foto.pack()
+
+    # Frame para los botones
+    button_frame = ctk.CTkFrame(main_frame)
+    button_frame.pack(pady=10, fill="x")
+
+    ver_estadisticas_button = ctk.CTkButton(button_frame, text="Ver Estadísticas", command=ver_estadisticas, state="disabled")
+    ver_estadisticas_button.pack(side="left", padx=5, expand=True)
+
+    ir_a_combate_button = ctk.CTkButton(button_frame, text="Ir a un combate", command=ir_a_combate, state="disabled")
+    ir_a_combate_button.pack(side="left", padx=5, expand=True)
+
+    salir_button = ctk.CTkButton(button_frame, text="Salir", command=root.quit)
+    salir_button.pack(side="left", padx=5, expand=True)
 
     root.mainloop()
 
-Menu()
+if __name__ == "__main__":
+    Menu()

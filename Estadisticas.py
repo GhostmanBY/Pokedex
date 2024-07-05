@@ -269,5 +269,3 @@ pokemones = {
         "pokedex": 89, "precicion": 3, "evacion": 3,
     },
 }
-
-
