@@ -124,14 +124,22 @@ def get_health_color(percentage):
     else:
         return "red"
     
-def precicion_calculo(ataque, pokemon_A, pokemon_D):
-    P_movimiento = Precicion_de_movimiento[ataque]
 
-    P_pokemon_A = pokemones[pokemon_A]["precicion"]
+
+def precicion_calculo(ataque, pokemon_A, pokemon_D):
+    if ataque not in Precicion_de_movimiento:
+        raise ValueError(f"El ataque '{ataque}' no está definido en Precicion_de_movimiento")
     
-    E_pokemon_D = pokemones[pokemon_D]["evacion"]
+    P_movimiento = float(Precicion_de_movimiento[ataque])
     
-    porcentaje_final = P_movimiento * (P_pokemon_A/E_pokemon_D)
+    P_pokemon_A = float(clon_stats[pokemon_A]["precicion"])
+    E_pokemon_D = float(clon_stats[pokemon_D]["evacion"])
+    
+    if E_pokemon_D == 0:
+        E_pokemon_D = 1
+    
+    porcentaje_final = P_movimiento * (P_pokemon_A / E_pokemon_D)
+    porcentaje_final = max(0, min(100, porcentaje_final))
     
     return float(porcentaje_final)
 
