@@ -1,41 +1,71 @@
-from Menu import Menu
 import customtkinter as ctk
+from Menu import Menu
 
 def Jugar():
     root.destroy()
     Menu()
 
-# Establece el modo de apariencia en oscuro
+# Configuración general
 ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
 
-# Crea la ventana principal
+# Colores
+BG_COLOR = "#2C3E50"  # Azul oscuro
+BUTTON_COLOR = "#3498DB"  # Azul claro
+BUTTON_HOVER_COLOR = "#2980B9"  # Azul más oscuro para hover
+TEXT_COLOR = "#ECF0F1"  # Blanco grisáceo
+
+# Crear ventana principal
 root = ctk.CTk()
-root.geometry("800x600")
+root.geometry("600x800")
 root.title("Pokewar")
+root.configure(fg_color=BG_COLOR)
 
-# Define los colores inspirados en la Pokédex
-bg_color = "#F4F4F4"  # Fondo blanco
-header_color = "#CC0000"  # Rojo Pokédex para el encabezado
-button_color = "#CC0000"  # Rojo Pokédex para el botón
-button_hover_color = "#A80000"  # Rojo más oscuro para el botón al pasar el ratón
-text_color = "#000000"  # Texto negro para buen contraste
+# Frame principal
+main_frame = ctk.CTkFrame(root, fg_color=BG_COLOR)
+main_frame.pack(fill="both", expand=True)
 
-# Aplica el color de fondo
-root.configure(bg=bg_color)
+# Título del juego
+title_label = ctk.CTkLabel(
+    main_frame,
+    text="POKEWAR",
+    font=("Roboto", 60, "bold"),
+    text_color=TEXT_COLOR
+)
+title_label.pack(pady=(100, 50))
 
-# Encabezado (simula el diseño del encabezado de una Pokédex)
-titulo_frame = ctk.CTkFrame(root, bg_color=header_color, height=100)
-titulo_frame.pack(fill="x")
+# Función para crear botones
+def create_button(parent, text, command):
+    return ctk.CTkButton(
+        parent,
+        text=text,
+        command=command,
+        width=200,
+        height=50,
+        corner_radius=25,
+        fg_color=BUTTON_COLOR,
+        hover_color=BUTTON_HOVER_COLOR,
+        text_color=TEXT_COLOR,
+        font=("Roboto", 20)
+    )
 
-titulo = ctk.CTkLabel(titulo_frame, text="Pokewar", font=("Arial", 50), text_color="white", bg_color=header_color)
-titulo.pack(pady=20)
+# Botones
+jugar_button = create_button(main_frame, "Jugar", Jugar)
+jugar_button.pack(pady=20)
 
-# Botón de jugar
-jugar = ctk.CTkButton(root, text="Jugar", font=("Arial", 20), command=Jugar, fg_color=button_color, hover_color=button_hover_color)
-jugar.pack(pady=20)
+opciones_button = create_button(main_frame, "Opciones", lambda: print("Opciones"))
+opciones_button.pack(pady=20)
+
+salir_button = create_button(main_frame, "Salir", root.quit)
+salir_button.pack(pady=20)
 
 # Pie de página
-footer = ctk.CTkLabel(root, text="desarrollado por: \n GhostmanBY && Markbusking \n © 2024. Todos los derechos reservados.", font=("Arial", 15), text_color=text_color, bg_color=bg_color)
+footer = ctk.CTkLabel(
+    main_frame,
+    text="Desarrollado por: GhostmanBY && Markbusking\n© 2024. Todos los derechos reservados.",
+    font=("Roboto", 12),
+    text_color=TEXT_COLOR
+)
 footer.pack(side="bottom", pady=20)
 
 root.mainloop()
