@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from customtkinter import *
 import random
+import copy
 
 # Importaciones de los módulos necesarios
 from Pokedex import serch_pokemon_num
@@ -16,6 +17,7 @@ POKE_YELLOW = "#FFDE00"
 POKE_BLACK = "#1E1E1E"
 POKE_WHITE = "#FFFFFF"
 
+
 def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador, label_oponente, label_jugador, historial_label):
     global PsA_Rival, PsA_Jugador
     
@@ -29,37 +31,60 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
     movimientos = [seleccionar_movimiento(Pokemon_J, i) for i in range(4)]
     ataque = movimientos[indice]
 
-    if Tipo_movimiento(ataque) not in ["Especial", "Fisico"]:
-        evacion_precicion(ataque, Pokemon_J, Pokemon_R)
-    else:
-        porcentaje_de_acierto_J = precicion_calculo(ataque, Pokemon_J, Pokemon_R)
-        movimiento_B = movimiento_bot(Pokemon_R)
-        porcentaje_de_acierto_B = precicion_calculo(movimiento_B, Pokemon_R, Pokemon_J)
+    porcentaje_de_acierto_J = precicion_calculo(ataque, Pokemon_J, Pokemon_R)
+    movimiento_B = movimiento_bot(Pokemon_R)
+    porcentaje_de_acierto_B = precicion_calculo(movimiento_B, Pokemon_R, Pokemon_J)
 
-        if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
+    # Determinar el orden de ataque según la velocidad
+    if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
+        orden = [(Pokemon_J, ataque, porcentaje_de_acierto_J), (Pokemon_R, movimiento_B, porcentaje_de_acierto_B)]
+    elif pokemones[Pokemon_J]["vel"] < pokemones[Pokemon_R]["vel"]:
+        orden = [(Pokemon_R, movimiento_B, porcentaje_de_acierto_B), (Pokemon_J, ataque, porcentaje_de_acierto_J)]
+    else:  # Velocidades iguales, decidir al azar
+        if random.randint(1, 2) == 1:
             orden = [(Pokemon_J, ataque, porcentaje_de_acierto_J), (Pokemon_R, movimiento_B, porcentaje_de_acierto_B)]
         else:
             orden = [(Pokemon_R, movimiento_B, porcentaje_de_acierto_B), (Pokemon_J, ataque, porcentaje_de_acierto_J)]
-
-        historial = ""
-        for atacante, movimiento, precision in orden:
-            precicion = random.uniform(0, 100)
-            if precision >= precicion:
-                if atacante == Pokemon_J:
-                    daño = Daño(movimiento, Pokemon_J, Pokemon_R)
+    
+    historial = ""
+    for atacante, movimiento, precision in orden:
+        precision_aleatoria = random.uniform(0, 100)
+        if precision >= precision_aleatoria:
+            if atacante == Pokemon_J:
+                if Tipo_movimiento(movimiento) in ["Especial", "Fisico"]:
+                    daño = Daño(movimiento, Pokemon_J, Pokemon_R, Jugador=True)
                     PsA_Rival -= daño
                     historial += f"{Pokemon_J} usó {movimiento} y causó {daño} de daño.\n"
+                    # Verifica que animar_ataque esté definido
                     animar_ataque(label_oponente)
                 else:
-                    daño = Daño(movimiento, Pokemon_R, Pokemon_J)
-                    PsA_Jugador -= daño
-                    historial += f"{Pokemon_R} usó {movimiento} y causó {daño} de daño.\n"
-                    animar_ataque(label_jugador)
+                    stat = evacion_precicion(movimiento, Pokemon_J, Pokemon_R, Jugador=True)
+                    if stat == "Alt_Precicion":
+                        stat = "precision"
+                    elif stat == "Alt_Evacion":
+                        stat = "evacion"
+
+                    historial += f"{Pokemon_J} usó {movimiento} y afectó la {stat} de {Pokemon_R}.\n"
             else:
-                historial += f"{atacante} falló al usar {movimiento}.\n"
-        
-        historial_label.configure(text=historial)
+                if Tipo_movimiento(movimiento_B) in ["Especial", "Fisico"]:
+                    daño = Daño(movimiento_B, Pokemon_R, Pokemon_J, Jugador=False)
+                    PsA_Jugador -= daño
+                    historial += f"{Pokemon_R} usó {movimiento_B} y causó {daño} de daño.\n"
+                    # Verifica que animar_ataque esté definido
+                    animar_ataque(label_jugador)
+                else:
+                    stat = evacion_precicion(movimiento_B, Pokemon_R, Pokemon_J, Jugador=False)
+                    if stat == "Alt_Precicion":
+                        stat = "precision"
+                    elif stat == "Alt_Evacion":
+                        stat = "evacion"
+                        
+                    historial += f"{Pokemon_R} usó {movimiento_B} y afectó la {stat} de {Pokemon_J}.\n"
+        else:
+            historial += f"{atacante} falló al usar {movimiento}.\n"
     
+    historial_label.configure(text=historial)
+
     actualizar_ps(barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J)
 
 def actualizar_ps(barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J):
@@ -91,7 +116,6 @@ def animar_ataque(label):
         label.after(50)
     label.place(x=int(original_pos['x']), y=int(original_pos['y']))
 
-
 def get_health_color(percentage):
     if percentage > 0.5:
         return "green"
@@ -99,6 +123,7 @@ def get_health_color(percentage):
         return "yellow"
     else:
         return "red"
+    
 def precicion_calculo(ataque, pokemon_A, pokemon_D):
     P_movimiento = Precicion_de_movimiento[ataque]
 
@@ -111,27 +136,42 @@ def precicion_calculo(ataque, pokemon_A, pokemon_D):
     return float(porcentaje_final)
 
 def movimiento_bot(pokemon_bot):
-    movimiento = [seleccionar_movimiento(pokemon_bot, 0), seleccionar_movimiento(pokemon_bot, 1)]
+    movimiento = [seleccionar_movimiento(pokemon_bot, i) for i in range(4)]
     return random.choice(movimiento)
 
-def evacion_precicion(movimiento, Pokemon_A, Pokemon_D):
+def evacion_precicion(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
     if Tipo_movimiento(movimiento) == "Alt_Precicion":
-        if movimiento in variacion[Tipo_movimiento(movimiento)]: 
-            pokemones[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]    
+        if movimiento in variacion[Tipo_movimiento(movimiento)]:
+            if Jugador == True:
+                clon_stats[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]
+            else:
+                pokemones[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]
     else:
         if movimiento in variacion[Tipo_movimiento(movimiento)]:
-            pokemones[Pokemon_A]["evacion"] += variacion[Tipo_movimiento(movimiento)][movimiento]
+            if Jugador == True:
+                clon_stats[Pokemon_A]["evacion"] += variacion[Tipo_movimiento(movimiento)][movimiento]
+            else:
+                pokemones[Pokemon_A]["evacion"] += variacion[Tipo_movimiento(movimiento)][movimiento]
+    return Tipo_movimiento(movimiento)
 
-def Daño(movimiento, Pokemon_A, Pokemon_D):
+def Daño(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
 
     N = 1
     
     if Tipo_movimiento(movimiento) == "Físico":
-        A = pokemones[Pokemon_A]["atk"]
-        D = pokemones[Pokemon_D]["def"]
+        if Jugador == True:
+            A = pokemones[Pokemon_A]["atk"] #Ataque Físico Jugador
+            D = clon_stats[Pokemon_A]["atk"] #Defensa Física alterada o no Bot
+        else:
+            A = clon_stats[Pokemon_A]["atk"] #Ataque Físico alterado o no Bot
+            D = pokemones[Pokemon_D]["def"] #Defensa Física Jugador
     else:
-        A = pokemones[Pokemon_A]["atkE"]
-        D = pokemones[Pokemon_D]["defE"]
+        if Jugador == True:
+            A = pokemones[Pokemon_A]["atkE"] #Ataque Especial Jugador
+            D = clon_stats[Pokemon_A]["atkE"] #Defensa Especial alterada o no Bot
+        else:
+            A = clon_stats[Pokemon_A]["atkE"] #Ataque Especial alterado o no Bot
+            D = pokemones[Pokemon_D]["defE"] #Defensa Especial Jugador
 
     P = Potencia_de_movimientos[movimiento]
     
@@ -148,10 +188,11 @@ def Daño(movimiento, Pokemon_A, Pokemon_D):
 
 
 def Pelea(Pokemon):
-    global PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival
+    global PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival, clon_stats
     num = [1, 4, 7]
     R = random.choice(num)
     Pokemon_Rival = serch_pokemon_num(R)
+    clon_stats = copy.deepcopy(pokemones)
 
     PsA_Rival = pokemones[Pokemon_Rival]["hp"]
     PsA_Jugador = pokemones[Pokemon]["hp"]
@@ -182,10 +223,10 @@ def Pelea(Pokemon):
     label_J = CTkLabel(master=batalla_frame, text=f"{Pokemon}\nPS: {PsA_Jugador}/{vida_jugador}", text_color="#3E3934")
     label_J.place(relx=0.2, rely=0.65, anchor="center")
 
-    ataques_frame = CTkFrame(master=batalla_frame, height=100, width=280, fg_color="#82786D", corner_radius=10)
-    ataques_frame.place(relx=0.5, rely=0.85, anchor="center")
+    ataques_frame = CTkFrame(master=batalla_frame, height=100, width=300, fg_color="#82786D", corner_radius=10)
+    ataques_frame.place(relx=0.5, rely=0.84, anchor="center")
 
-    opciones = [seleccionar_movimiento(Pokemon, 0), seleccionar_movimiento(Pokemon, 1), seleccionar_movimiento(Pokemon, 2), seleccionar_movimiento(Pokemon, 3)]
+    opciones = [seleccionar_movimiento(Pokemon, i) for i in range(4)]
     global seleccion
     seleccion = 0
 
