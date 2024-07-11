@@ -16,7 +16,7 @@ POKE_YELLOW = "#FFDE00"
 POKE_BLACK = "#1E1E1E"
 POKE_WHITE = "#FFFFFF"
 
-def decicion_ataque(indice, Pokemon_J, Pokemon_R, label_oponente, label_jugador, historial_label):
+def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador, label_oponente, label_jugador, historial_label):
     global PsA_Rival, PsA_Jugador
     
     if PsA_Rival <= 0 or PsA_Jugador <= 0:
@@ -49,18 +49,20 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, label_oponente, label_jugador,
                     daño = Daño(movimiento, Pokemon_J, Pokemon_R)
                     PsA_Rival -= daño
                     historial += f"{Pokemon_J} usó {movimiento} y causó {daño} de daño.\n"
+                    animar_ataque(label_oponente)
                 else:
                     daño = Daño(movimiento, Pokemon_R, Pokemon_J)
                     PsA_Jugador -= daño
                     historial += f"{Pokemon_R} usó {movimiento} y causó {daño} de daño.\n"
+                    animar_ataque(label_jugador)
             else:
                 historial += f"{atacante} falló al usar {movimiento}.\n"
         
         historial_label.configure(text=historial)
     
-    actualizar_ps(label_oponente, label_jugador, Pokemon_R, Pokemon_J)
+    actualizar_ps(barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J)
 
-def actualizar_ps(label_oponente, label_jugador, Pokemon_R, Pokemon_J):
+def actualizar_ps(barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J):
     global PsA_Rival, PsA_Jugador
     vida_rival = pokemones[Pokemon_R]["hp"]
     vida_jugador = pokemones[Pokemon_J]["hp"]
@@ -68,6 +70,35 @@ def actualizar_ps(label_oponente, label_jugador, Pokemon_R, Pokemon_J):
     label_oponente.configure(text=f"{Pokemon_R}\nPS: {max(0, PsA_Rival)}/{vida_rival}")
     label_jugador.configure(text=f"{Pokemon_J}\nPS: {max(0, PsA_Jugador)}/{vida_jugador}")
 
+    # Actualizar barras de vida
+    porcentaje_rival = max(0, min(PsA_Rival / vida_rival, 1))
+    porcentaje_jugador = max(0, min(PsA_Jugador / vida_jugador, 1))
+    
+    barra_oponente.configure(progress_color=get_health_color(porcentaje_rival))
+    barra_jugador.configure(progress_color=get_health_color(porcentaje_jugador))
+    
+    barra_oponente.set(porcentaje_rival)
+    barra_jugador.set(porcentaje_jugador)
+
+def animar_ataque(label):
+    original_pos = label.place_info()
+    for _ in range(3):
+        label.place(x=int(original_pos['x'])+5, y=int(original_pos['y'])-5)
+        label.update()
+        label.after(50)
+        label.place(x=int(original_pos['x'])-5, y=int(original_pos['y'])+5)
+        label.update()
+        label.after(50)
+    label.place(x=int(original_pos['x']), y=int(original_pos['y']))
+
+
+def get_health_color(percentage):
+    if percentage > 0.5:
+        return "green"
+    elif percentage > 0.2:
+        return "yellow"
+    else:
+        return "red"
 def precicion_calculo(ataque, pokemon_A, pokemon_D):
     P_movimiento = Precicion_de_movimiento[ataque]
 
@@ -128,68 +159,75 @@ def Pelea(Pokemon):
     vida_jugador = pokemones[Pokemon]["hp"]
 
     root = CTk()
-    root.geometry("350x400")
-    root.title("Combate")
+    root.geometry("400x500")
+    root.title("Combate Pokémon")
 
-    main_frame = CTkFrame(master=root, height=400, width=350, fg_color=POKE_RED, corner_radius=0)
+    main_frame = CTkFrame(master=root, height=500, width=400, fg_color=POKE_RED, corner_radius=0)
     main_frame.place(relx=0.5, rely=0.5, anchor="center")
 
-    batalla_frame = CTkFrame(master=main_frame, height=260, width=250, fg_color="#AEA499", border_width=5, border_color="black")
+    batalla_frame = CTkFrame(master=main_frame, height=320, width=300, fg_color="#AEA499", border_width=5, border_color="black")
     batalla_frame.place(relx=0.5, rely=0.35, anchor="center")
 
-    pokemon_R = CTkLabel(master=batalla_frame, text=f"{Pokemon_Rival}\nPS: {PsA_Rival}/{vida_rival}", text_color="#3E3934")
-    pokemon_R.place(relx=0.8, rely=0.15, anchor="center")
+    barra_R = CTkProgressBar(master=batalla_frame, width=100, height=20, border_width=1, border_color="black", progress_color="green")
+    barra_R.place(relx=0.8, rely=0.15, anchor="center")
+    barra_R.set(1)
 
-    pokemon_J = CTkLabel(master=batalla_frame, text=f"{Pokemon}\nPS: {PsA_Jugador}/{vida_jugador}", text_color="#3E3934")
-    pokemon_J.place(relx=0.2, rely=0.55, anchor="center")
+    label_R = CTkLabel(master=batalla_frame, text=f"{Pokemon_Rival}\nPS: {PsA_Rival}/{vida_rival}", text_color="#3E3934")
+    label_R.place(relx=0.8, rely=0.25, anchor="center")
 
-    ataques_frame = CTkFrame(master=batalla_frame, height=90, width=240, fg_color="#82786D", corner_radius=0)
-    ataques_frame.place(relx=0.5, rely=0.81, anchor="center")
+    barra_J = CTkProgressBar(master=batalla_frame, width=100, height=20, border_width=1, border_color="black", progress_color="green")
+    barra_J.place(relx=0.2, rely=0.55, anchor="center")
+    barra_J.set(1)
 
+    label_J = CTkLabel(master=batalla_frame, text=f"{Pokemon}\nPS: {PsA_Jugador}/{vida_jugador}", text_color="#3E3934")
+    label_J.place(relx=0.2, rely=0.65, anchor="center")
+
+    ataques_frame = CTkFrame(master=batalla_frame, height=100, width=280, fg_color="#82786D", corner_radius=10)
+    ataques_frame.place(relx=0.5, rely=0.85, anchor="center")
 
     opciones = [seleccionar_movimiento(Pokemon, 0), seleccionar_movimiento(Pokemon, 1), seleccionar_movimiento(Pokemon, 2), seleccionar_movimiento(Pokemon, 3)]
     global seleccion
     seleccion = 0
 
     def actualizar_opciones(ataques_frame):
-        # Calcular la cantidad de botones por columna
-        num_filas = (4 + 1) // 2  # Asegura que la última fila tenga 2 botones si es impar
-        for i in range(num_filas):
-            for j in range(2):  # Dos columnas
+        for i in range(2):
+            for j in range(2):
                 idx = i * 2 + j
                 if idx < 4:
                     if idx == seleccion:
-                        btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="gray", command=lambda idx=idx: seleccionar_opcion(idx), height=40, width=110)
+                        btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="gray", hover_color=POKE_BLUE, 
+                                        command=lambda idx=idx: seleccionar_opcion(idx), height=40, width=130)
                     else:
-                        btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="#999999",command=lambda idx=idx: seleccionar_opcion(idx), height=40, width=110)
+                        btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="#999999", hover_color=POKE_BLUE,
+                                        command=lambda idx=idx: seleccionar_opcion(idx), height=40, width=130)
                     btn.grid(row=i, column=j, padx=5, pady=2)
 
-    def tecla_arriba(event, ataques_frame):
+    def tecla_arriba(event):
         global seleccion
         if seleccion > 1:
             seleccion -= 2
         actualizar_opciones(ataques_frame)
 
-    def tecla_abajo(event, ataques_frame):
+    def tecla_abajo(event):
         global seleccion
-        if seleccion < 4 - 2:
+        if seleccion < 2:
             seleccion += 2
         actualizar_opciones(ataques_frame)
 
-    def tecla_izquierda(event, ataques_frame):
+    def tecla_izquierda(event):
         global seleccion
         if seleccion % 2 == 1:
             seleccion -= 1
         actualizar_opciones(ataques_frame)
 
-    def tecla_derecha(event, ataques_frame):
+    def tecla_derecha(event):
         global seleccion
-        if seleccion % 2 == 0 and seleccion + 1 < 4:
+        if seleccion % 2 == 0 and seleccion < 3:
             seleccion += 1
         actualizar_opciones(ataques_frame)
 
-    def tecla_enter(event, seleccion, Pokemon, Pokemon_Rival, pokemon_R, pokemon_J, battle_log):
-        decicion_ataque(seleccion, Pokemon, Pokemon_Rival, pokemon_R, pokemon_J, battle_log)
+    def tecla_enter(event):
+        decicion_ataque(seleccion, Pokemon, Pokemon_Rival, barra_R, barra_J, label_R, label_J, battle_log)
 
     def seleccionar_opcion(idx):
         global seleccion
@@ -199,29 +237,31 @@ def Pelea(Pokemon):
     def salir(event):
         root.destroy()
         
-    historial_frame = CTkFrame(master=main_frame, height=100, width=220, fg_color="#C0C0C0", bg_color="black", border_width=5, border_color="black")
-    historial_frame.place(relx=0.5, rely=0.79, anchor="center")
+    historial_frame = CTkFrame(master=main_frame, height=120, width=260, fg_color="#C0C0C0", bg_color="black", border_width=5, border_color="black")
+    historial_frame.place(relx=0.5, rely=0.82, anchor="center")
     
     battle_log = CTkLabel(historial_frame, 
                           text=f"Tu {Pokemon} se va a enfrentar a un {Pokemon_Rival}",
                           font=("Arial", 12), 
                           text_color="black", 
-                          wraplength=180,
-                          width=10,  # Ancho fijo
-                          height=10)  # Alto fijo
+                          wraplength=220,
+                          width=240,
+                          height=100)
     battle_log.place(relx=0.5, rely=0.5, anchor="center")
 
     actualizar_opciones(ataques_frame)
-    root.bind("<Up>", lambda event: tecla_arriba(event, ataques_frame))
-    root.bind("<Down>", lambda event: tecla_abajo(event, ataques_frame))
-    root.bind("<Left>", lambda event: tecla_izquierda(event, ataques_frame))
-    root.bind("<Right>", lambda event: tecla_derecha(event, ataques_frame))
-    root.bind("<Return>", lambda event: tecla_enter(event, seleccion, Pokemon, Pokemon_Rival, pokemon_R, pokemon_J, battle_log))
-    root.bind("<z>", lambda event: tecla_enter(event, seleccion, Pokemon, Pokemon_Rival, pokemon_R, pokemon_J, battle_log))
-    root.bind("<Escape>", lambda event: salir(event))
-    root.bind("<x>", lambda event: salir(event))
+    root.bind("<Up>", tecla_arriba)
+    root.bind("<Down>", tecla_abajo)
+    root.bind("<Left>", tecla_izquierda)
+    root.bind("<Right>", tecla_derecha)
+    root.bind("<Return>", tecla_enter)
+    root.bind("<z>", tecla_enter)
+    root.bind("<Escape>", salir)
+    root.bind("<x>", salir)
     
     root.mainloop()
+
+# Las demás funciones permanecen igual
 
 # Llamada a la función principal
 if __name__ == "__main__":
