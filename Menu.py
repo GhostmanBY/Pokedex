@@ -21,6 +21,7 @@ def obtener_imagen_pokemon(nombre, tamaño=(200, 200)):
     return ImageTk.PhotoImage(img)
 
 def Menu():
+    
     # Definición de la paleta de colores Pokémon
     POKE_RED = "#CC0000"
     POKE_BLUE = "#3B4CCA"
@@ -118,25 +119,28 @@ def Menu():
                         fg_color=POKE_RED, hover_color=POKE_BLUE, text_color=POKE_WHITE).pack(pady=(20, 0))
 
     def ir_a_combate():
-        Pelea(PokemonJ)
-
+        if PokemonJ:
+            Pelea(PokemonJ)
+        else:
+            messagebox.showerror("Error", "Debe seleccionar un Pokémon primero")
+    
     def actualizar_pokemon_label(*args):
         if ID_var.get() == "Nombre":
             Pokemon_label.configure(text="Ingrese el nombre del Pokémon")
         else:
             Pokemon_label.configure(text="Ingrese el número de Pokédex")
-
+    
     # Marco principal
     main_frame = ctk.CTkFrame(root, fg_color=POKE_WHITE)
     main_frame.pack(padx=20, pady=20, fill="both", expand=True)
-
+    
     # Título
     ctk.CTkLabel(main_frame, text="Pokédex", font=("Helvetica", 24, "bold"), text_color=POKE_RED).pack(pady=10)
 
     # Frame para la selección del Pokémon
     select_frame = ctk.CTkFrame(main_frame, fg_color=POKE_WHITE)
     select_frame.pack(pady=10, padx=10, fill="x")
-
+    
     ID_var = StringVar(value="Nombre")
     ID_var.trace("w", actualizar_pokemon_label)
     ID_menu = ctk.CTkOptionMenu(select_frame, variable=ID_var, values=["Nombre", "Pokedex"], 
@@ -145,7 +149,7 @@ def Menu():
 
     Pokemon_label = ctk.CTkLabel(select_frame, text="Ingrese el nombre del Pokémon", text_color=POKE_BLACK)
     Pokemon_label.pack(side="left", padx=5)
-
+    
     Pokemon_entry = ctk.CTkEntry(select_frame, fg_color=POKE_WHITE, text_color=POKE_BLACK, border_color=POKE_BLUE)
     Pokemon_entry.pack(side="left", padx=5, expand=True, fill="x")
     Pokemon_entry.bind("<Return>", lambda event: seleccionar_pokemon())
@@ -161,8 +165,8 @@ def Menu():
 
     foto = ctk.CTkLabel(image_frame, text="", width=300, height=300)
     foto.pack()
-
-    # Frame para los botones
+    
+    # Frame para los botones    
     button_frame = ctk.CTkFrame(main_frame, fg_color=POKE_WHITE)
     button_frame.pack(pady=10, fill="x")
 
@@ -177,8 +181,10 @@ def Menu():
     salir_button = ctk.CTkButton(button_frame, text="Salir", command=root.quit, 
                                  fg_color=POKE_RED, hover_color=POKE_YELLOW, text_color=POKE_WHITE)
     salir_button.pack(side="left", padx=5, expand=True)
-
+    
     root.mainloop()
+    
+    
 
 if __name__ == "__main__":
     Menu()
