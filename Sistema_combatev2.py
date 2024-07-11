@@ -137,10 +137,10 @@ def Pelea(Pokemon):
     batalla_frame = CTkFrame(master=main_frame, height=260, width=250, fg_color="#AEA499", border_width=5, border_color="black")
     batalla_frame.place(relx=0.5, rely=0.35, anchor="center")
 
-    pokemon_R = CTkLabel(master=batalla_frame, text=f"{Pokemon_Rival}\n{PsA_Rival}/{vida_rival}", text_color="#3E3934")
+    pokemon_R = CTkLabel(master=batalla_frame, text=f"{Pokemon_Rival}\nPS: {PsA_Rival}/{vida_rival}", text_color="#3E3934")
     pokemon_R.place(relx=0.8, rely=0.15, anchor="center")
 
-    pokemon_J = CTkLabel(master=batalla_frame, text=f"{Pokemon}\n{PsA_Jugador}/{vida_jugador}", text_color="#3E3934")
+    pokemon_J = CTkLabel(master=batalla_frame, text=f"{Pokemon}\nPS: {PsA_Jugador}/{vida_jugador}", text_color="#3E3934")
     pokemon_J.place(relx=0.2, rely=0.55, anchor="center")
 
     ataques_frame = CTkFrame(master=batalla_frame, height=90, width=240, fg_color="#82786D", corner_radius=0)
