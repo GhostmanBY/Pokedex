@@ -59,12 +59,22 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
                     animar_ataque(label_oponente)
                 else:
                     stat = evacion_precicion(movimiento, Pokemon_J, Pokemon_R, Jugador=True)
-                    if stat == "Alt_Precicion":
-                        stat = "precision"
-                    elif stat == "Alt_Evacion":
-                        stat = "evacion"
+                    stat_1 = stat
+                    
+                    if stat_1 == "Alt_Precicion":
+                        stat_1 = "precision"
+                    elif stat_1 == "Alt_Evacion":
+                        stat_1 = "evacion"
+                    elif stat_1 == "Alt_imposible_P":
+                        stat_1 = "precision"
+                    elif stat_1 == "Alt_imposible_E":
+                        stat_1 = "evacion"
 
-                    historial += f"{Pokemon_J} usó {movimiento} y afectó la {stat} de {Pokemon_R}.\n"
+                    if stat[:13] == "Alt_imposible":
+                        historial += f"A {Pokemon_R} no se le puede bajar mas la {stat_1}.\n"
+                    else:
+                        historial += f"{Pokemon_J} usó {movimiento} y afectó la {stat_1} de {Pokemon_R}.\n"
+
             else:
                 if Tipo_movimiento(movimiento_B) in ["Especial", "Fisico"]:
                     daño = Daño(movimiento_B, Pokemon_R, Pokemon_J, Jugador=False)
@@ -73,13 +83,23 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
                     # Verifica que animar_ataque esté definido
                     animar_ataque(label_jugador)
                 else:
-                    stat = evacion_precicion(movimiento_B, Pokemon_R, Pokemon_J, Jugador=False)
-                    if stat == "Alt_Precicion":
-                        stat = "precision"
-                    elif stat == "Alt_Evacion":
-                        stat = "evacion"
-                        
-                    historial += f"{Pokemon_R} usó {movimiento_B} y afectó la {stat} de {Pokemon_J}.\n"
+                    stat_1 = evacion_precicion(movimiento_B, Pokemon_R, Pokemon_J, Jugador=False)
+                    stat = stat_1
+
+                    if stat_1 == "Alt_Precicion":
+                        stat_1 = "precision"
+                    elif stat_1 == "Alt_Evacion":
+                        stat_1 = "evacion"
+                    elif stat_1 == "Alt_imposible_P":
+                        stat_1 = "precision"
+                    elif stat_1 == "Alt_imposible_E":
+                        stat_1 = "evacion"
+
+                    if stat[:13] == "Alt_imposible":
+                        historial += f"A {Pokemon_J} no se le puede bajar mas la {stat_1}.\n"
+                    else:
+                        historial += f"{Pokemon_R} usó {movimiento_B} y afectó la {stat_1} de {Pokemon_J}.\n"
+
         else:
             historial += f"{atacante} falló al usar {movimiento}.\n"
     
@@ -124,22 +144,14 @@ def get_health_color(percentage):
     else:
         return "red"
     
-
-
 def precicion_calculo(ataque, pokemon_A, pokemon_D):
-    if ataque not in Precicion_de_movimiento:
-        raise ValueError(f"El ataque '{ataque}' no está definido en Precicion_de_movimiento")
+    P_movimiento = Precicion_de_movimiento[ataque]
+
+    P_pokemon_A = pokemones[pokemon_A]["precicion"]
     
-    P_movimiento = float(Precicion_de_movimiento[ataque])
+    E_pokemon_D = pokemones[pokemon_D]["evacion"]
     
-    P_pokemon_A = float(clon_stats[pokemon_A]["precicion"])
-    E_pokemon_D = float(clon_stats[pokemon_D]["evacion"])
-    
-    if E_pokemon_D == 0:
-        E_pokemon_D = 1
-    
-    porcentaje_final = P_movimiento * (P_pokemon_A / E_pokemon_D)
-    porcentaje_final = max(0, min(100, porcentaje_final))
+    porcentaje_final = P_movimiento * (P_pokemon_A/E_pokemon_D)
     
     return float(porcentaje_final)
 
@@ -148,6 +160,16 @@ def movimiento_bot(pokemon_bot):
     return random.choice(movimiento)
 
 def evacion_precicion(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
+    if Jugador == True and clon_stats[Pokemon_D]["precicion"] == -3:
+        return "Alt_imposible_P"
+    elif Jugador == False and pokemones[Pokemon_D]["precicion"] == -3:
+        return "Alt_imposible_P"
+    
+    if Jugador == True and clon_stats[Pokemon_A]["evacion"] == 9:
+        return "Alt_imposible_E"
+    elif Jugador == False and pokemones[Pokemon_A]["evacion"] == 9:
+        return "Alt_imposible_E"
+    
     if Tipo_movimiento(movimiento) == "Alt_Precicion":
         if movimiento in variacion[Tipo_movimiento(movimiento)]:
             if Jugador == True:
