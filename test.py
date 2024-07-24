@@ -233,7 +233,7 @@ def Daño(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
             D = pokemones_CoPy[Pokemon_D]["defE"]
 
     P = Potencia_de_movimientos[movimiento]
-    B = 1.5 if Tipos_pokemons[Pokemon_A] == tipos_movimientos[movimiento] else 1
+    B = 1.3 if Tipos_pokemons[Pokemon_A] == tipos_movimientos[movimiento] else 1.3
     E = Eficacia(tipos_movimientos[movimiento], Tipos_pokemons[Pokemon_D])
     V = random.randint(85, 100)
     Damage = 0.01 * B * E * V * (((0.2 * N + 1) * A * P) / (25 * D) + 2)
@@ -301,7 +301,6 @@ def Pelea(Pokemon):
     vida_jugador = pokemones_CoPy[Pokemon]["hp"]
     Jugador_LVL = 1
     xp_total = Proximo_LVL(Jugador_LVL+1)
-    print("Experiencia que necesita el pokemon: ", xp_total)
 
     root = CTk()
     root.geometry("400x500")

@@ -230,10 +230,10 @@ tipo_de_movimientos = {
 
 def Eficacia(Tipo_Atacante, Tipo_Defensor): #funcion para definir la eficacioa
     if Tipo_Defensor in Tipos_x2.get(Tipo_Atacante, []): #Dice que si Tipo del pokemon que resive el ataqe esta dentro del diccionario de x2(buscando en cada una de los sub indice) retorna 2
-        return 2
+        return 1.8
     elif Tipo_Defensor in Tipos_x1.get(Tipo_Atacante, []): #Dice que si Tipo del pokemon que resive el ataqe esta dentro del diccionario de x1(buscando en cada una de los sub indice) retorna 1
-        return 1
+        return 1.35
     elif Tipo_Defensor in Tipos_x05.get(Tipo_Atacante, []): #Dice que si Tipo del pokemon que resive el ataqe esta dentro del diccionario de x05(buscando en cada una de los sub indice) retorna 0.5
-        return 0.5
+        return 0.8
     else:
         return 1 #en caso de que no este en ninguno de los 3 se retorna 1 para que no haya problemas con el calculo
