@@ -24,9 +24,10 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
     if PsA_Rival <= 0 or PsA_Jugador <= 0:
         if PsA_Rival <= 0:
             historial_label.configure(text="¡El jugador ha ganado!", text_color="green")
+            return
         elif PsA_Jugador <= 0:
             historial_label.configure(text="¡El Rival ha ganado!", text_color="red")
-        return
+            return
 
     movimientos = [seleccionar_movimiento(Pokemon_J, i) for i in range(4)]
     ataque = movimientos[indice]
@@ -185,9 +186,11 @@ def evacion_precicion(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
     return Tipo_movimiento(movimiento)
 
 def Daño(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
+    if Jugador == True:
+        N = Jugador_LVL
+    else:
+        N = Bot_LVL
 
-    N = 1
-    
     if Tipo_movimiento(movimiento) == "Físico":
         if Jugador == True:
             A = pokemones[Pokemon_A]["atk"] #Ataque Físico Jugador
@@ -215,20 +218,37 @@ def Daño(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
 
     return int(Damage)
 
-
+def Proximo_LVL(lvl_PK):
+    if lvl_PK <= 50:
+        E = (lvl_PK**3)*(2-0.02*lvl_PK)
+    elif lvl_PK <= 68:
+        E = (lvl_PK**3)*(1.5-0.01*lvl_PK)
+    elif lvl_PK <= 98:
+        if lvl_PK%3 == 0:
+            p = 0
+        elif lvl_PK%3 == 1:
+            p = 0.008
+        elif lvl_PK%3 == 2:
+            p = 0.014
+        E = (lvl_PK**3)*(1.274-0.02*(lvl_PK/3)-p)
+    elif lvl_PK <= 100:
+        E = (lvl_PK**3)*(1.6-0.01*lvl_PK)
+    return E
 
 def Pelea(Pokemon):
-    global PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival, clon_stats
+    global PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival, clon_stats, Bot_LVL, Jugador_LVL
     num = [1, 4, 7]
     R = random.choice(num)
     Pokemon_Rival = serch_pokemon_num(R)
     clon_stats = copy.deepcopy(pokemones)
-
+    Bot_LVL = 1
+    
     PsA_Rival = pokemones[Pokemon_Rival]["hp"]
     PsA_Jugador = pokemones[Pokemon]["hp"]
     vida_rival = pokemones[Pokemon_Rival]["hp"]
     vida_jugador = pokemones[Pokemon]["hp"]
-
+    Jugador_LVL = 1
+    
     root = CTk()
     root.geometry("400x500")
     root.title("Combate Pokémon")

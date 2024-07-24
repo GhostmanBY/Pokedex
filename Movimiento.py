@@ -112,10 +112,10 @@ movimientos_de_Pokemons = {
         "Electrotela"
     ],
     "Squirtle": [
-        "Cola Férrea",
-        "Venganza",
-        "Furia",
-        "Burbuja"
+        "Pistola agua",
+        "Placaje",
+        "Doble equipo",
+        "Ataque arena"
     ],
     "Caterpie": [
         "Ronquido",
@@ -130,10 +130,10 @@ movimientos_de_Pokemons = {
         "Pulso Dragón"
     ],
     "Bulbasaur": [
-        "Retribución",
-        "Gruñido",
-        "Doble Equipo",
-        "Síntesis"
+        "Latigo cepa",
+        "Placaje",
+        "Doble equipo",
+        "Ataque arena"
     ],
     "Butterfree": [
         "Teletransporte",
@@ -142,10 +142,10 @@ movimientos_de_Pokemons = {
         "Dulce Aroma"
     ],
     "Charmander": [
-        "Frustración",
-        "Megapatada",
-        "Fuerza",
-        "Cólera Ardiente"
+        "Ascuas",
+        "Placaje",
+        "Doble equipo",
+        "Ataque arena"
     ],
     "Blastoise": [
         "Antiaéreo",

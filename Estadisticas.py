@@ -2,82 +2,82 @@
 #Exepcion de que toda evolucion no tiene estadistica debido a que esas se consiguien a raiz del pokemon original
 pokemones = { 
     "Bulbasaur": {
-        "pokedex": 1, "hp": 45, "atk": 49, "def": 49, "atkE": 65, "defE": 65, "vel": 45, "precicion": 3, "evacion": 3,
+        "pokedex": 1, "hp": 45, "atk": 49, "def": 49, "atkE": 65, "defE": 65, "vel": 45, "precicion": 3, "evacion": 3, "xp": 64,
     },
     "Ivysaur": {
-        "pokedex": 2, "precicion": 3, "evacion": 3,
+        "pokedex": 2, "precicion": 3, "evacion": 3, "xp": 141,
     },
     "Venusaur": {
-        "pokedex": 3, "precicion": 3, "evacion": 3,
+        "pokedex": 3, "precicion": 3, "evacion": 3, "xp": 208,
     },
     "Charmander": {
-        "pokedex": 4, "hp": 39, "atk": 52, "def": 43, "atkE": 60, "defE": 50, "vel": 65, "precicion": 3, "evacion": 3,
+        "pokedex": 4, "hp": 39, "atk": 52, "def": 43, "atkE": 60, "defE": 50, "vel": 65, "precicion": 3, "evacion": 3, "xp": 65,
     },
     "Charmeleon": {
-        "pokedex": 5, "precicion": 3, "evacion": 3,
+        "pokedex": 5, "precicion": 3, "evacion": 3, "xp": 142,
     },
     "Charizard": {
-        "pokedex": 6, "precicion": 3, "evacion": 3,
+        "pokedex": 6, "precicion": 3, "evacion": 3, "xp": 209,
     },
     "Squirtle": {
-        "pokedex": 7, "hp": 44, "atk": 48, "def": 65, "atkE": 50, "defE": 64, "vel": 43, "precicion": 3, "evacion": 3,
+        "pokedex": 7, "hp": 44, "atk": 48, "def": 65, "atkE": 50, "defE": 64, "vel": 43, "precicion": 3, "evacion": 3, "xp": 66,
     },
     "Wartortle": {
-        "pokedex": 8, "precicion": 3, "evacion": 3,
+        "pokedex": 8, "precicion": 3, "evacion": 3, "xp": 143,
     },
     "Blastoise": {
-        "pokedex": 9, "precicion": 3, "evacion": 3,
+        "pokedex": 9, "precicion": 3, "evacion": 3, "xp": 210,
     },
     "Caterpie": {
-        "pokedex": 10, "hp": 45, "atk": 30, "def": 35, "atkE": 20, "defE": 20, "vel": 45, "precicion": 3, "evacion": 3,
+        "pokedex": 10, "hp": 45, "atk": 30, "def": 35, "atkE": 20, "defE": 20, "vel": 45, "precicion": 3, "evacion": 3, "xp": 53,
     },
     "Metapod": {
-        "pokedex": 11, "precicion": 3, "evacion": 3,
+        "pokedex": 11, "precicion": 3, "evacion": 3, "xp": 72,
     },
     "Butterfree": {
-        "pokedex": 12, "precicion": 3, "evacion": 3,
+        "pokedex": 12, "precicion": 3, "evacion": 3, "xp": 160,
     },
     "Weedle": {
-        "pokedex": 13, "hp": 40, "atk": 35, "def": 30, "atkE": 20, "defE": 20, "vel": 50, "precicion": 3, "evacion": 3,
+        "pokedex": 13, "hp": 40, "atk": 35, "def": 30, "atkE": 20, "defE": 20, "vel": 50, "precicion": 3, "evacion": 3, "xp": 52,
     },
     "Kakuna": {
-        "pokedex": 14, "precicion": 3, "evacion": 3,
+        "pokedex": 14, "precicion": 3, "evacion": 3, "xp": 71,
     },
     "Beedrill": {
-        "pokedex": 15, "precicion": 3, "evacion": 3,
+        "pokedex": 15, "precicion": 3, "evacion": 3, "xp": 159,
     },
     "Pidgey": {
-        "pokedex": 16, "hp": 40, "atk": 45, "def": 40, "atkE": 35, "defE": 35, "vel": 56, "precicion": 3, "evacion": 3,
+        "pokedex": 16, "hp": 40, "atk": 45, "def": 40, "atkE": 35, "defE": 35, "vel": 56, "precicion": 3, "evacion": 3, "xp": 55,
     },
     "Pidgeotto": {
-        "pokedex": 17, "precicion": 3, "evacion": 3,
+        "pokedex": 17, "precicion": 3, "evacion": 3, "xp": 113,
     },
     "Pidgeot": {
-        "pokedex": 18, "precicion": 3, "evacion": 3,
+        "pokedex": 18, "precicion": 3, "evacion": 3, "xp": 172,
     },
     "Rattata": {
-        "pokedex": 19, "hp": 30, "atk": 56, "def": 35, "atkE": 25, "defE": 35, "vel": 72, "precicion": 3, "evacion": 3,
+        "pokedex": 19, "hp": 30, "atk": 56, "def": 35, "atkE": 25, "defE": 35, "vel": 72, "precicion": 3, "evacion": 3, "xp": 57,
     },
     "Raticate": {
-        "pokedex": 20, "precicion": 3, "evacion": 3,
+        "pokedex": 20, "precicion": 3, "evacion": 3, "xp": 116,
     },
     "Spearow": {
-        "pokedex": 21, "hp": 40, "atk": 60, "def": 30, "atkE": 31, "defE": 31, "vel": 70, "precicion": 3, "evacion": 3,
+        "pokedex": 21, "hp": 40, "atk": 60, "def": 30, "atkE": 31, "defE": 31, "vel": 70, "precicion": 3, "evacion": 3, "xp": 58,
     },
     "Fearow": {
-        "pokedex": 22, "precicion": 3, "evacion": 3,
+        "pokedex": 22, "precicion": 3, "evacion": 3, "xp": 162,
     },
     "Ekans": {
-        "pokedex": 23, "hp": 35, "atk": 60, "def": 44, "atkE": 40, "defE": 54, "vel": 55, "precicion": 3, "evacion": 3,
+        "pokedex": 23, "hp": 35, "atk": 60, "def": 44, "atkE": 40, "defE": 54, "vel": 55, "precicion": 3, "evacion": 3, "xp": 62,
     },
     "Arbok": {
-        "pokedex": 24, "precicion": 3, "evacion": 3,
+        "pokedex": 24, "precicion": 3, "evacion": 3, "xp": 147,
     },
     "Pikachu": {
-        "pokedex": 25, "hp": 35, "atk": 55, "def": 40, "atkE": 50, "defE": 50, "vel": 90, "precicion": 3, "evacion": 3,
+        "pokedex": 25, "hp": 35, "atk": 55, "def": 40, "atkE": 50, "defE": 50, "vel": 90, "precicion": 3, "evacion": 3, "xp": 82,
     },
     "Raichu": {
-        "pokedex": 26, "precicion": 3, "evacion": 3,
+        "pokedex": 26, "precicion": 3, "evacion": 3, "xp": 122,
     },
     "Sandshrew": {
         "pokedex": 27, "hp": 50, "atk": 75, "def": 85, "atkE": 20, "defE": 30, "vel": 40, "precicion": 3, "evacion": 3,
