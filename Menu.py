@@ -6,7 +6,7 @@ from io import BytesIO
 from Pokedex import serch_pokemon_name, serch_pokemon_num
 from Estadisticas import pokemones
 from Tabla_de_tipos import Tipos_pokemons
-from Sistema_combatev2 import Pelea
+from test import Pelea
 
 def obtener_imagen_pokemon(nombre, tamaño=(200, 200)):
     url = f"https://pokeapi.co/api/v2/pokemon/{nombre.lower()}/"

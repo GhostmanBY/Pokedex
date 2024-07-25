@@ -50,10 +50,9 @@ def decicion_ataque(root, indice, Pokemon_J, Pokemon_R, barra_oponente, barra_ju
         if PsA_Rival <= 0:
             C = (pokemones_CoPy[Pokemon_R]["xp"]*Bot_LVL*1)/7
             total_xp += int(C)
-            print("XP que va acumulando: ",total_xp)
+
             if total_xp >= xp_total:
                 Jugador_LVL += 1
-                print("Nivel del pokemon: ",Jugador_LVL)
 
             historial_label.configure(text="¡El jugador ha ganado!", text_color="green")
             root.after(2000, lambda: reiniciar_batalla(root, Pokemon_J, barra_oponente, barra_jugador, label_oponente, label_jugador, historial_label))
@@ -202,7 +201,6 @@ def evacion_precicion(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
                 clon_stats[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]
             else:
                 pokemones_CoPy[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]
-                print("Valor de precicion PJ: ",pokemones_CoPy[Pokemon_D]["precicion"])
     else:
         if movimiento in variacion[Tipo_movimiento(movimiento)]:
             if Jugador == True:

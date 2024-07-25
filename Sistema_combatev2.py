@@ -9,6 +9,7 @@ from Pokedex import serch_pokemon_num
 from Estadisticas import pokemones
 from Movimiento import seleccionar_movimiento, Tipo_movimiento, Potencia_de_movimientos, Precicion_de_movimiento, variacion, movimientos_de_Pokemons
 from Tabla_de_tipos import Tipos_pokemons, tipos_movimientos, Eficacia
+from Ventana_Mejoras import mejoras
 
 # Definición de colores Pokédex
 POKE_RED = "#C84124"
@@ -17,13 +18,51 @@ POKE_YELLOW = "#FFDE00"
 POKE_BLACK = "#1E1E1E"
 POKE_WHITE = "#FFFFFF"
 
+# Variables globales
+global f, opciones, ataques_frame, seleccion, PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival, clon_stats, pokemones_CoPy, Bot_LVL, Jugador_LVL, xp_total
+opciones = []
+ataques_frame = None
+seleccion = 0
+total_xp = 0
+f = 0
 
-def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador, label_oponente, label_jugador, historial_label):
-    global PsA_Rival, PsA_Jugador
-    
+def seleccionar_opcion(root, idx, Pokemon):
+    global seleccion
+    seleccion = idx
+    decicion_ataque(root, seleccion, Pokemon, Pokemon_Rival, barra_R, barra_J, label_R, label_J, battle_log)
+
+def actualizar_opciones(root, ataques_frame, Pokemon):
+    global seleccion, opciones
+    for i in range(2):
+        for j in range(2):
+            idx = i * 2 + j
+            if idx < 4:
+                if idx == seleccion:
+                    btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="gray", hover_color=POKE_BLUE, 
+                                    command=lambda idx=idx: seleccionar_opcion(root, idx, Pokemon), height=40, width=130)
+                else:
+                    btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="#999999", hover_color=POKE_BLUE,
+                                    command=lambda idx=idx: seleccionar_opcion(root, idx, Pokemon), height=40, width=130)
+                btn.grid(row=i, column=j, padx=5, pady=2)
+
+def decicion_ataque(root, indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador, label_oponente, label_jugador, historial_label):
+    global PsA_Rival, PsA_Jugador, total_xp, Jugador_LVL, f
+
     if PsA_Rival <= 0 or PsA_Jugador <= 0:
         if PsA_Rival <= 0:
+            C = (pokemones_CoPy[Pokemon_R]["xp"]*Bot_LVL*1)/7
+            total_xp += int(C)
+
+            if total_xp >= xp_total:
+                Jugador_LVL += 1
+            
+            while f == 0:
+                f += 1
+                mejoras()
+            f = 0
+
             historial_label.configure(text="¡El jugador ha ganado!", text_color="green")
+            root.after(2000, lambda: reiniciar_batalla(root, Pokemon_J, barra_oponente, barra_jugador, label_oponente, label_jugador, historial_label))
             return
         elif PsA_Jugador <= 0:
             historial_label.configure(text="¡El Rival ha ganado!", text_color="red")
@@ -36,12 +75,11 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
     movimiento_B = movimiento_bot(Pokemon_R)
     porcentaje_de_acierto_B = precicion_calculo(movimiento_B, Pokemon_R, Pokemon_J)
 
-    # Determinar el orden de ataque según la velocidad
-    if pokemones[Pokemon_J]["vel"] > pokemones[Pokemon_R]["vel"]:
+    if pokemones_CoPy[Pokemon_J]["vel"] > pokemones_CoPy[Pokemon_R]["vel"]:
         orden = [(Pokemon_J, ataque, porcentaje_de_acierto_J), (Pokemon_R, movimiento_B, porcentaje_de_acierto_B)]
-    elif pokemones[Pokemon_J]["vel"] < pokemones[Pokemon_R]["vel"]:
+    elif pokemones_CoPy[Pokemon_J]["vel"] < pokemones_CoPy[Pokemon_R]["vel"]:
         orden = [(Pokemon_R, movimiento_B, porcentaje_de_acierto_B), (Pokemon_J, ataque, porcentaje_de_acierto_J)]
-    else:  # Velocidades iguales, decidir al azar
+    else:
         if random.randint(1, 2) == 1:
             orden = [(Pokemon_J, ataque, porcentaje_de_acierto_J), (Pokemon_R, movimiento_B, porcentaje_de_acierto_B)]
         else:
@@ -56,7 +94,6 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
                     daño = Daño(movimiento, Pokemon_J, Pokemon_R, Jugador=True)
                     PsA_Rival -= daño
                     historial += f"{Pokemon_J} usó {movimiento} y causó {daño} de daño.\n"
-                    # Verifica que animar_ataque esté definido
                     animar_ataque(label_oponente)
                 else:
                     stat = evacion_precicion(movimiento, Pokemon_J, Pokemon_R, Jugador=True)
@@ -81,7 +118,6 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
                     daño = Daño(movimiento_B, Pokemon_R, Pokemon_J, Jugador=False)
                     PsA_Jugador -= daño
                     historial += f"{Pokemon_R} usó {movimiento_B} y causó {daño} de daño.\n"
-                    # Verifica que animar_ataque esté definido
                     animar_ataque(label_jugador)
                 else:
                     stat_1 = evacion_precicion(movimiento_B, Pokemon_R, Pokemon_J, Jugador=False)
@@ -106,17 +142,16 @@ def decicion_ataque(indice, Pokemon_J, Pokemon_R, barra_oponente, barra_jugador,
     
     historial_label.configure(text=historial)
 
-    actualizar_ps(barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J)
+    actualizar_ps(root, barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J)
 
-def actualizar_ps(barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J):
+def actualizar_ps(root, barra_oponente, barra_jugador, label_oponente, label_jugador, Pokemon_R, Pokemon_J):
     global PsA_Rival, PsA_Jugador
-    vida_rival = pokemones[Pokemon_R]["hp"]
-    vida_jugador = pokemones[Pokemon_J]["hp"]
+    vida_rival = pokemones_CoPy[Pokemon_R]["hp"]
+    vida_jugador = pokemones_CoPy[Pokemon_J]["hp"]
 
     label_oponente.configure(text=f"{Pokemon_R}\nPS: {max(0, PsA_Rival)}/{vida_rival}")
     label_jugador.configure(text=f"{Pokemon_J}\nPS: {max(0, PsA_Jugador)}/{vida_jugador}")
 
-    # Actualizar barras de vida
     porcentaje_rival = max(0, min(PsA_Rival / vida_rival, 1))
     porcentaje_jugador = max(0, min(PsA_Jugador / vida_jugador, 1))
     
@@ -147,13 +182,9 @@ def get_health_color(percentage):
     
 def precicion_calculo(ataque, pokemon_A, pokemon_D):
     P_movimiento = Precicion_de_movimiento[ataque]
-
-    P_pokemon_A = pokemones[pokemon_A]["precicion"]
-    
-    E_pokemon_D = pokemones[pokemon_D]["evacion"]
-    
+    P_pokemon_A = pokemones_CoPy[pokemon_A]["precicion"]
+    E_pokemon_D = pokemones_CoPy[pokemon_D]["evacion"]
     porcentaje_final = P_movimiento * (P_pokemon_A/E_pokemon_D)
-    
     return float(porcentaje_final)
 
 def movimiento_bot(pokemon_bot):
@@ -161,14 +192,14 @@ def movimiento_bot(pokemon_bot):
     return random.choice(movimiento)
 
 def evacion_precicion(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
-    if Jugador == True and clon_stats[Pokemon_D]["precicion"] == -3:
+    if Jugador == True and clon_stats[Pokemon_D]["precicion"] == 1:
         return "Alt_imposible_P"
-    elif Jugador == False and pokemones[Pokemon_D]["precicion"] == -3:
+    elif Jugador == False and pokemones_CoPy[Pokemon_D]["precicion"] == 1:
         return "Alt_imposible_P"
     
-    if Jugador == True and clon_stats[Pokemon_A]["evacion"] == 9:
+    if Jugador == True and clon_stats[Pokemon_A]["evacion"] == 6:
         return "Alt_imposible_E"
-    elif Jugador == False and pokemones[Pokemon_A]["evacion"] == 9:
+    elif Jugador == False and pokemones_CoPy[Pokemon_A]["evacion"] == 6:
         return "Alt_imposible_E"
     
     if Tipo_movimiento(movimiento) == "Alt_Precicion":
@@ -176,13 +207,13 @@ def evacion_precicion(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
             if Jugador == True:
                 clon_stats[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]
             else:
-                pokemones[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]
+                pokemones_CoPy[Pokemon_D]["precicion"] -= variacion[Tipo_movimiento(movimiento)][movimiento]
     else:
         if movimiento in variacion[Tipo_movimiento(movimiento)]:
             if Jugador == True:
                 clon_stats[Pokemon_A]["evacion"] += variacion[Tipo_movimiento(movimiento)][movimiento]
             else:
-                pokemones[Pokemon_A]["evacion"] += variacion[Tipo_movimiento(movimiento)][movimiento]
+                pokemones_CoPy[Pokemon_A]["evacion"] += variacion[Tipo_movimiento(movimiento)][movimiento]
     return Tipo_movimiento(movimiento)
 
 def Daño(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
@@ -193,29 +224,24 @@ def Daño(movimiento, Pokemon_A, Pokemon_D, Jugador=True):
 
     if Tipo_movimiento(movimiento) == "Físico":
         if Jugador == True:
-            A = pokemones[Pokemon_A]["atk"] #Ataque Físico Jugador
-            D = clon_stats[Pokemon_A]["atk"] #Defensa Física alterada o no Bot
+            A = pokemones_CoPy[Pokemon_A]["atk"]
+            D = clon_stats[Pokemon_A]["atk"]
         else:
-            A = clon_stats[Pokemon_A]["atk"] #Ataque Físico alterado o no Bot
-            D = pokemones[Pokemon_D]["def"] #Defensa Física Jugador
+            A = clon_stats[Pokemon_A]["atk"]
+            D = pokemones_CoPy[Pokemon_D]["def"]
     else:
         if Jugador == True:
-            A = pokemones[Pokemon_A]["atkE"] #Ataque Especial Jugador
-            D = clon_stats[Pokemon_A]["atkE"] #Defensa Especial alterada o no Bot
+            A = pokemones_CoPy[Pokemon_A]["atkE"]
+            D = clon_stats[Pokemon_A]["atkE"]
         else:
-            A = clon_stats[Pokemon_A]["atkE"] #Ataque Especial alterado o no Bot
-            D = pokemones[Pokemon_D]["defE"] #Defensa Especial Jugador
+            A = clon_stats[Pokemon_A]["atkE"]
+            D = pokemones_CoPy[Pokemon_D]["defE"]
 
     P = Potencia_de_movimientos[movimiento]
-    
-    B = 1.5 if Tipos_pokemons[Pokemon_A] == tipos_movimientos[movimiento] else 1
-
+    B = 1.3 if Tipos_pokemons[Pokemon_A] == tipos_movimientos[movimiento] else 1.3
     E = Eficacia(tipos_movimientos[movimiento], Tipos_pokemons[Pokemon_D])
-
     V = random.randint(85, 100)
-
     Damage = 0.01 * B * E * V * (((0.2 * N + 1) * A * P) / (25 * D) + 2)
-
     return int(Damage)
 
 def Proximo_LVL(lvl_PK):
@@ -233,22 +259,54 @@ def Proximo_LVL(lvl_PK):
         E = (lvl_PK**3)*(1.274-0.02*(lvl_PK/3)-p)
     elif lvl_PK <= 100:
         E = (lvl_PK**3)*(1.6-0.01*lvl_PK)
-    return E
+    return int(E)
+
+def reiniciar_batalla(root, Pokemon_J, barra_oponente, barra_jugador, label_oponente, label_jugador, historial_label):
+    global PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival, clon_stats, pokemones_CoPy, Bot_LVL
+
+    # Seleccionar un nuevo Pokémon rival
+    num = [1, 4, 7]
+    R = random.choice(num)
+    Pokemon_Rival = serch_pokemon_num(R)
+
+    # Reiniciar estadísticas
+    clon_stats = copy.deepcopy(pokemones)
+    Bot_LVL = random.randint(1, 5)
+
+    pokemones_CoPy = copy.deepcopy(pokemones)
+
+    PsA_Rival = pokemones_CoPy[Pokemon_Rival]["hp"]
+    PsA_Jugador = pokemones_CoPy[Pokemon_J]["hp"]
+    vida_rival = pokemones_CoPy[Pokemon_Rival]["hp"]
+    vida_jugador = pokemones_CoPy[Pokemon_J]["hp"]
+
+    # Actualizar etiquetas y barras de vida
+    label_oponente.configure(text=f"{Pokemon_Rival}\nPS: {PsA_Rival}/{vida_rival}")
+    label_jugador.configure(text=f"{Pokemon_J}\nPS: {PsA_Jugador}/{vida_jugador}")
+    
+    barra_oponente.set(1)
+    barra_jugador.set(1)
+
+    historial_label.configure(text=f"Un nuevo {Pokemon_Rival} aparece!")
 
 def Pelea(Pokemon):
-    global PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival, clon_stats, Bot_LVL, Jugador_LVL
+    global PsA_Rival, PsA_Jugador, Pokemon_Rival, vida_jugador, vida_rival, clon_stats, pokemones_CoPy,Bot_LVL, Jugador_LVL, xp_total
+    global opciones, barra_R, barra_J, label_R, label_J, battle_log  # Add these global declarations
     num = [1, 4, 7]
     R = random.choice(num)
     Pokemon_Rival = serch_pokemon_num(R)
     clon_stats = copy.deepcopy(pokemones)
     Bot_LVL = 1
     
-    PsA_Rival = pokemones[Pokemon_Rival]["hp"]
-    PsA_Jugador = pokemones[Pokemon]["hp"]
-    vida_rival = pokemones[Pokemon_Rival]["hp"]
-    vida_jugador = pokemones[Pokemon]["hp"]
+    pokemones_CoPy = copy.deepcopy(pokemones)
+
+    PsA_Rival = pokemones_CoPy[Pokemon_Rival]["hp"]
+    PsA_Jugador = pokemones_CoPy[Pokemon]["hp"]
+    vida_rival = pokemones_CoPy[Pokemon_Rival]["hp"]
+    vida_jugador = pokemones_CoPy[Pokemon]["hp"]
     Jugador_LVL = 1
-    
+    xp_total = Proximo_LVL(Jugador_LVL+1)
+
     root = CTk()
     root.geometry("400x500")
     root.title("Combate Pokémon")
@@ -280,51 +338,33 @@ def Pelea(Pokemon):
     global seleccion
     seleccion = 0
 
-    def actualizar_opciones(ataques_frame):
-        for i in range(2):
-            for j in range(2):
-                idx = i * 2 + j
-                if idx < 4:
-                    if idx == seleccion:
-                        btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="gray", hover_color=POKE_BLUE, 
-                                        command=lambda idx=idx: seleccionar_opcion(idx), height=40, width=130)
-                    else:
-                        btn = CTkButton(ataques_frame, text=opciones[idx], fg_color="#999999", hover_color=POKE_BLUE,
-                                        command=lambda idx=idx: seleccionar_opcion(idx), height=40, width=130)
-                    btn.grid(row=i, column=j, padx=5, pady=2)
-
     def tecla_arriba(event):
         global seleccion
         if seleccion > 1:
             seleccion -= 2
-        actualizar_opciones(ataques_frame)
+        actualizar_opciones(root, ataques_frame, Pokemon)
 
     def tecla_abajo(event):
         global seleccion
         if seleccion < 2:
             seleccion += 2
-        actualizar_opciones(ataques_frame)
+        actualizar_opciones(root, ataques_frame, Pokemon)
 
     def tecla_izquierda(event):
         global seleccion
         if seleccion % 2 == 1:
             seleccion -= 1
-        actualizar_opciones(ataques_frame)
+        actualizar_opciones(root, ataques_frame, Pokemon)
 
     def tecla_derecha(event):
         global seleccion
         if seleccion % 2 == 0 and seleccion < 3:
             seleccion += 1
-        actualizar_opciones(ataques_frame)
+        actualizar_opciones(root, ataques_frame, Pokemon)
 
     def tecla_enter(event):
-        decicion_ataque(seleccion, Pokemon, Pokemon_Rival, barra_R, barra_J, label_R, label_J, battle_log)
+        decicion_ataque(root, seleccion, Pokemon, Pokemon_Rival, barra_R, barra_J, label_R, label_J, battle_log)
 
-    def seleccionar_opcion(idx):
-        global seleccion
-        seleccion = idx
-        tecla_enter(None)
-    
     def salir(event):
         root.destroy()
         
@@ -340,7 +380,7 @@ def Pelea(Pokemon):
                           height=100)
     battle_log.place(relx=0.5, rely=0.5, anchor="center")
 
-    actualizar_opciones(ataques_frame)
+    actualizar_opciones(root, ataques_frame, Pokemon)
     root.bind("<Up>", tecla_arriba)
     root.bind("<Down>", tecla_abajo)
     root.bind("<Left>", tecla_izquierda)
@@ -351,8 +391,6 @@ def Pelea(Pokemon):
     root.bind("<x>", salir)
     
     root.mainloop()
-
-# Las demás funciones permanecen igual
 
 # Llamada a la función principal
 if __name__ == "__main__":
