@@ -18,8 +18,8 @@ def guardar_info(pokemon_nombre):
             'xp': 0
         }
         print(f"Información guardada para {pokemon_nombre}")
-        with open("info_run.json","w") as archivo:
-            json.dump(info_pokemon,archivo)
+        with open("info_run.json","w",) as archivo:
+            json.dump(info_pokemon,archivo,indent=4)
         Menu()  # Llamar a la función Menu después de guardar la información
 
 def Jugar():

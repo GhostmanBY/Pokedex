@@ -3,6 +3,7 @@ from tkinter import messagebox, StringVar
 from PIL import Image, ImageTk
 import requests
 from io import BytesIO
+import json
 from Pokedex import serch_pokemon_name, serch_pokemon_num
 from Estadisticas import pokemones
 from Tabla_de_tipos import Tipos_pokemons
@@ -28,6 +29,15 @@ def obtener_imagen_pokemon(nombre, tamaño=(200, 200)):
     
     return ImageTk.PhotoImage(img)
 
+def actualizar_json(pokemon, stat, valor):
+    with open('info_run.json', 'r+') as f:
+        data = json.load(f)
+        if pokemon not in data:
+            data[pokemon] = {}
+        data[pokemon][stat] = valor
+        f.seek(0)
+        json.dump(data, f, indent=4)
+        f.truncate()
 
 def mejoras(PokemonJ, N):
     root = CTk(fg_color="grey")
@@ -40,7 +50,7 @@ def mejoras(PokemonJ, N):
     def mejorar():
         if PokemonJ:
             ventana_estadisticas = CTkToplevel(root)
-            ventana_estadisticas.geometry("500x400")
+            ventana_estadisticas.geometry("500x500")
             ventana_estadisticas.title(f"Estadísticas de {PokemonJ}")
             ventana_estadisticas.configure(fg_color=POKE_WHITE)
 
@@ -56,6 +66,7 @@ def mejoras(PokemonJ, N):
             CTkLabel(main_frame, text=f"{PokemonJ}", font=("Helvetica", 24, "bold"), text_color=POKE_RED).pack(pady=(0, 1))
             CTkLabel(main_frame, text=f"Tipo: {Tipo_P}", font=("Helvetica", 16), text_color=POKE_BLUE).pack(pady=(0, 1))
             CTkLabel(main_frame, text=f"Nivel: {Nivel}", font=("Helvetica", 16), text_color=POKE_BLUE).pack(pady=(0, 1))
+
             # Imagen del Pokémon
             try:
                 imagen_poke = obtener_imagen_pokemon(PokemonJ, tamaño=(150, 150))
@@ -71,20 +82,29 @@ def mejoras(PokemonJ, N):
             stats_labels = ["HP", "Ataque", "Defensa", "Ataque Esp", "Defensa Esp", "Velocidad"]
             stats_keys = ["hp", "atk", "def", "atkE", "defE", "vel"]
 
+            def aumentar_stat(key):
+                stats[key] += 1
+                actualizar_json(PokemonJ, key, stats[key])
+                stat_labels[key].configure(text=f"{stats[key]}")
+
+            stat_labels = {}
             for i, (label, key) in enumerate(zip(stats_labels, stats_keys)):
                 row = i // 2
                 col = i % 2
                 
                 frame = CTkFrame(stats_frame, fg_color=POKE_YELLOW)
-                frame.grid(row=row, column=col, padx=20, pady=5, sticky="ew")
+                frame.grid(row=row, column=col*2, padx=10, pady=5, sticky="ew")
                 
-                CTkLabel(frame, text=f"{label}:", font=("Helvetica", 14, "bold"), text_color=POKE_BLUE).pack(side="left", padx=15)
-                CTkLabel(frame, text=f"{stats[key]}", font=("Helvetica", 14), text_color=POKE_BLACK).pack(side="right", padx=15)
+                CTkLabel(frame, text=f"{label}:", font=("Helvetica", 14, "bold"), text_color=POKE_BLUE).pack(side="left", padx=5)
+                stat_labels[key] = CTkLabel(frame, text=f"{stats[key]}", font=("Helvetica", 14), text_color=POKE_BLACK)
+                stat_labels[key].pack(side="left", padx=5)
+                
+                CTkButton(stats_frame, text="+", command=lambda k=key: aumentar_stat(k), width=30, height=30).grid(row=row, column=col*2+1, padx=(0, 10), pady=5)
 
             stats_frame.grid_columnconfigure(0, weight=1)
-            stats_frame.grid_columnconfigure(1, weight=1)
-
-            
+            stats_frame.grid_columnconfigure(1, weight=0)
+            stats_frame.grid_columnconfigure(2, weight=1)
+            stats_frame.grid_columnconfigure(3, weight=0)
 
     text = CTkLabel(master=root, text="Elija su opcion", text_color="black", font=letra)
     text.pack()
