@@ -3,6 +3,7 @@ import customtkinter as ctk
 from PIL import Image
 from Menu import Menu, obtener_imagen_pokemon
 from Estadisticas import pokemones
+from test import Pelea
 
 def guardar_info(pokemon_nombre):
     if pokemon_nombre in pokemones:
@@ -18,9 +19,9 @@ def guardar_info(pokemon_nombre):
             'xp': 0
         }
         print(f"Información guardada para {pokemon_nombre}")
-        with open("info_run.json","w",) as archivo:
-            json.dump(info_pokemon,archivo,indent=4)
-        Menu()  # Llamar a la función Menu después de guardar la información
+        with open("info_run.json","w") as archivo:
+            json.dump(info_pokemon,archivo)
+        Pelea(pokemon_nombre)  # Llamar a la función Menu después de guardar la información
 
 def Jugar():
     root.withdraw()  # Ocultar la ventana principal en lugar de destruirla
