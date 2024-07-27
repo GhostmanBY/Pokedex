@@ -1,9 +1,23 @@
 import json
+import os
 import customtkinter as ctk
 from PIL import Image
 from Menu import Menu, obtener_imagen_pokemon
 from Estadisticas import pokemones
 from test import Pelea
+
+def cargar_info_guardada():
+    filename = "info_run.json"
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r") as archivo:
+                data = json.load(archivo)
+                if data:
+                    # Tomamos el primer Pokémon guardado
+                    return list(data.keys())[0]
+        except json.JSONDecodeError:
+            print(f"Error al leer {filename}.")
+    return None
 
 def guardar_info(pokemon_nombre):
     if pokemon_nombre in pokemones:
@@ -18,13 +32,30 @@ def guardar_info(pokemon_nombre):
             'velocidad': stats['vel'],
             'xp': 0
         }
-        print(f"Información guardada para {pokemon_nombre}")
-        with open("info_run.json","w") as archivo:
-            json.dump(info_pokemon,archivo)
-        Pelea(pokemon_nombre)  # Llamar a la función Menu después de guardar la información
+        
+        filename = "info_run.json"
+        all_pokemon_info = {}
+        
+        if os.path.exists(filename):
+            try:
+                with open(filename, "r") as archivo:
+                    all_pokemon_info = json.load(archivo)
+            except json.JSONDecodeError:
+                print(f"Error al leer {filename}. Comenzando con datos vacíos.")
+        
+        all_pokemon_info[pokemon_nombre] = info_pokemon
+        
+        try:
+            with open(filename, "w") as archivo:
+                json.dump(all_pokemon_info, archivo, indent=4)
+            print(f"Información guardada para {pokemon_nombre}")
+        except IOError as e:
+            print(f"Error al escribir en {filename}: {e}")
+        
+        Pelea(pokemon_nombre)
 
 def Jugar():
-    root.withdraw()  # Ocultar la ventana principal en lugar de destruirla
+    root.withdraw()
     seleccion_ventana = ctk.CTkToplevel()
     seleccion_ventana.geometry("800x600")
     seleccion_ventana.title("Selección de Pokémon")
@@ -46,7 +77,7 @@ def Jugar():
         boton = ctk.CTkButton(
             frame,
             text=f"Elegir {pokemon_nombre}",
-            command=lambda: guardar_info(pokemon_nombre),
+            command=lambda pn=pokemon_nombre: guardar_info(pn),
             width=150,
             height=40,
             corner_radius=20,
@@ -119,7 +150,13 @@ def create_button(parent, text, command):
         font=("Roboto", 24)
     )
 
-# Botones
+# Verificar si hay información guardada
+pokemon_guardado = cargar_info_guardada()
+
+if pokemon_guardado:
+    continuar_button = create_button(main_frame, "Continuar", lambda: Pelea(pokemon_guardado))
+    continuar_button.pack(pady=20)
+
 jugar_button = create_button(main_frame, "Jugar", Jugar)
 jugar_button.pack(pady=20)
 
