@@ -10,7 +10,7 @@ from Estadisticas import pokemones
 from Movimiento import seleccionar_movimiento, Tipo_movimiento, Potencia_de_movimientos, Precicion_de_movimiento, variacion, movimientos_de_Pokemons
 from Tabla_de_tipos import Tipos_pokemons, tipos_movimientos, Eficacia
 from Ventana_Mejoras import mejoras
-
+from game_over_animation import game_over
 # Definición de colores Pokédex
 POKE_RED = "#C84124"
 POKE_BLUE = "#3B4CCA"
@@ -66,6 +66,7 @@ def decicion_ataque(root, indice, Pokemon_J, Pokemon_R, barra_oponente, barra_ju
             return
         elif PsA_Jugador <= 0:
             historial_label.configure(text="¡El Rival ha ganado!", text_color="red")
+            game_over()
             return
 
     movimientos = [seleccionar_movimiento(Pokemon_J, i) for i in range(4)]
