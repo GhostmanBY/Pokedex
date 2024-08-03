@@ -7,16 +7,8 @@
         "ataque_esp": 60,
         "defensa_esp": 50,
         "velocidad": 65,
-        "xp": 0
-    },
-    "Bulbasaur": {
-        "nombre": "Bulbasaur",
-        "hp": 45,
-        "ataque": 49,
-        "defensa": 49,
-        "ataque_esp": 65,
-        "defensa_esp": 65,
-        "velocidad": 45,
+        "precision": 3,
+        "evacion": 3,
         "xp": 0
     }
 }

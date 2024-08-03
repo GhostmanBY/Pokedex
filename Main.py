@@ -118,7 +118,7 @@ def cargar_info_guardada():
             print(f"Error al leer {filename}.")
     return None
 
-def guardar_info(pokemon_nombre):
+def guardar_info(pokemon_nombre,ventana = None):
     if pokemon_nombre in pokemones:
         stats = pokemones[pokemon_nombre]
         info_pokemon = {
@@ -143,10 +143,11 @@ def guardar_info(pokemon_nombre):
             print(f"Información guardada para {pokemon_nombre}")
         except IOError as e:
             print(f"Error al escribir en {filename}: {e}")
-        
+        ventana.withdraw()
         Pelea(pokemon_nombre)
 
 def create_selection_window():
+    
     global loading_completed
     
     def load_pokemon_images():
@@ -178,7 +179,7 @@ def create_selection_window():
             boton = ctk.CTkButton(
                 frame,
                 text=f"Elegir {pokemon_nombre}",
-                command=lambda pn=pokemon_nombre: guardar_info(pn),
+                command=lambda pn=pokemon_nombre: guardar_info(pn, ventana=seleccion_ventana),
                 width=150,
                 height=40,
                 corner_radius=20,
@@ -268,12 +269,20 @@ def create_button(parent, text, command):
         font=("Roboto", 24)
     )
 
-# Verificar si hay información guardada
 pokemon_guardado = cargar_info_guardada()
+def continuar():
+    # Verificar si hay información guardada
+    if pokemon_guardado:
+        root.destroy()
+        Pelea(pokemon_guardado)
+    else:
+        messagebox.showinfo("Aviso", "No hay una partida guardada. Por favor, juega primero.")
 
-if pokemon_guardado:
-    continuar_button = create_button(main_frame, "Continuar", lambda: Pelea(pokemon_guardado))
-    continuar_button.pack(pady=20)
+
+
+
+continuar_button = create_button(main_frame, "Continuar", continuar)
+continuar_button.pack(pady=20)
 
 jugar_button = create_button(main_frame, "Jugar", Jugar)
 jugar_button.pack(pady=20)
